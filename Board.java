@@ -2,153 +2,55 @@ import java.util.*;
 
 public class Board {
 
-    private int boardHeight = 24;
-    private int boardWidth = 24;
+    // Member variables
+    private final int boardHeight = 24;
+    private final int boardWidth = 24;
+    
+    private final List<Coord> hhEntrances = List.of(new Coord(5, 6), new Coord(6, 3));
+    private final List<Coord> mmEntrances = List.of(new Coord(17, 5), new Coord(20, 6));
+    private final List<Coord> ccEntrances = List.of(new Coord(3, 17), new Coord(6, 18));
+    private final List<Coord> ppEntrances = List.of(new Coord(18, 17), new Coord(17, 20));
+    private final List<Coord> vvEntrances = List.of(new Coord(9, 12), new Coord(12, 10), new Coord(14, 11), new Coord(11, 13));
+    
+    private final Estate HH = new Estate(2, 2, 6, 6, "Haunted House", hhEntrances);
+    private final Estate MM = new Estate(17, 2, 21, 6, "Manic Manor", mmEntrances);
+    private final Estate CC = new Estate(2, 17, 6, 21, "Calamity Castle", ccEntrances);
+    private final Estate PP = new Estate(17, 17, 21, 21, "Peril Palace", ppEntrances);
+    private final Estate VV = new Estate(9, 10, 14, 13, "Visitation Villa", vvEntrances);
 
-    Character Bert = new Character(1, 9, "B", Character.Direction.BERT);
-    Character Lucilla = new Character(11, 1, "L", Character.Direction.LUCILLA);
-    Character Percy = new Character(22, 14, "P", Character.Direction.PERCY);
-    Character Malina = new Character(9, 22, "M", Character.Direction.MALINA);
-    List<Coord> hhEntrances = List.of(new Coord(5, 6), new Coord(6, 3));
-    List<Coord> mmEntrances = List.of(new Coord(17, 5), new Coord(20, 6));
-    List<Coord> ccEntrances = List.of(new Coord(3, 17), new Coord(6, 18));
-    List<Coord> ppEntrances = List.of(new Coord(18, 17), new Coord(17, 21));
-    List<Coord> vvEntrances = List.of(new Coord(9, 12), new Coord(12, 10), new Coord(14, 11), new Coord(11, 13));
-    Estate HH = new Estate(2, 2, 6, 6, "Haunted House", hhEntrances);
-    Estate MM = new Estate(17, 2, 21, 6, "Manic Manor", mmEntrances);
-    Estate CC = new Estate(2, 17, 6, 21, "Calamity Castle", ccEntrances);
-    Estate PP = new Estate(17, 17, 21, 21, "Peril Palace", ppEntrances);
-    Estate VV = new Estate(9, 10, 14, 13, "Visitation Villa", vvEntrances);
-    GreyArea Left = new GreyArea(5, 11, 6, 12, "GREY AREA");
-    GreyArea Right = new GreyArea(17, 11, 18, 12, "GREY AREA");
-    GreyArea Top = new GreyArea(11, 5, 12, 6, "GREY AREA");
-    GreyArea Bot = new GreyArea(11, 17, 12, 18, "GREY AREA");
-    ArrayList<Estate> estates = new ArrayList<>(List.of(HH, MM, CC, PP, VV, Left, Right, Top, Bot));
-    ArrayList<Card> deck = new ArrayList<>();
-    Set<Card> murderCards = new HashSet<>();
-    ArrayList<String> Weapons = new ArrayList<>(List.of("Broom", "Scissors", "Knife", "Shovel", "iPad"));
-    ArrayList<Character> characters = new ArrayList<>(List.of(Lucilla, Bert, Malina, Percy));
-    Random rand = new Random();
-    private int shuffle;
+    private final List<String> Weapons = List.of("Broom", "Scissors", "Knife", "Shovel", "iPad");
+    private List<Character> characters = new ArrayList<>(List.of(
+        new Character(11, 1, "L", Character.Direction.LUCILLA),
+        new Character(1, 9, "B", Character.Direction.BERT),
+        new Character(9, 22, "M", Character.Direction.MALINA),
+        new Character(22, 14, "P", Character.Direction.PERCY)
+    ));
+    
+    private final ArrayList<Estate> estates = new ArrayList<>(List.of(HH, MM, CC, PP, VV,
+        new GreyArea(5, 11, 6, 12, "GREY AREA"), 
+        new GreyArea(17, 11, 18, 12, "GREY AREA"),
+        new GreyArea(11, 5, 12, 6, "GREY AREA"),
+        new GreyArea(11, 17, 12, 18, "GREY AREA")
+    ));
+    private final ArrayList<Card> deck = new ArrayList<>();
+    private final Set<Card> murderCards = new HashSet<>();
+    
+    private List<Coord> validHighlightedCells;
+    private List<Coord> invalidHighlightedCells;
 
-    /**
-     * Determine the number of players in the game.
-     * Starting player is randomised
-     * @return The list of active characters
-     */
-    public void determineCharacters() {
-        /* If three players */
-        if (Main.UI.getPlayerCount() == 3) {
-            shuffle = rand.nextInt(3);
-            characters = new ArrayList<>(List.of(Lucilla, Bert, Malina));   // Default list of characters
-            /* Randomise starting player */
-            for (int i = 0; i < shuffle; i++) {
-                Character c = characters.remove(0);
-                characters.add(c);
-            }
+    // Constructor
+    public Board() {
+        // Initialize highlightedCells
+        validHighlightedCells = new ArrayList<>();
+        invalidHighlightedCells = new ArrayList<>();
 
-            /* If four players */
-        } else if (Main.UI.getPlayerCount() == 4) {
-            shuffle = rand.nextInt(4);
-            characters = new ArrayList<>(List.of(Lucilla, Bert, Malina, Percy));
-            for (int i = 0; i < shuffle; i++) {
-                Character c = characters.remove(0);
-                characters.add(c);
-            }
-        } else {
-            /* If neither */
-            throw new IllegalArgumentException("Case exception: player count is " + Main.UI.getPlayerCount()); // Dead code
-        }
-    }
-
-    /**
-     * Creates and distributes all the cards
-     */
-    Board() {
-        for (Estate e: estates) {
-            if(!(e instanceof GreyArea)) {
-                deck.add(new Card(e.getName(), Card.CardType.ESTATE));
-            }
-        }
-        for (String name: Weapons) {
-            deck.add(new Card(name, Card.CardType.WEAPON));
-        }
-        for (Character c: characters) {
-            deck.add(new Card(c.getName().toString(), Card.CardType.CHARACTER));
-        }
-
+        populateDeck();
         setMurderCards();
         distributeCards();
-
-        // These are used for debugging
-        for (Character c: characters) {
-            System.out.println(c.getName()+" cards:");
-            System.out.println(c.getCards() + "\n");
-        }
-            System.out.println("Murder cards :");
-            System.out.println(murderCards);
+        // displayCards();
     }
 
-    /**
-     * Chooses 1 card from each category at random
-     */
-    public void setMurderCards() {
-        Collections.shuffle(deck);
-
-        int countWeapon = 0;
-        int countCharacter = 0;
-        int countEstate = 0;
-
-        for (Card c : deck) {
-            if (countWeapon < 1 && c.getType() == Card.CardType.WEAPON) {
-                murderCards.add(c);
-                countWeapon++;
-            } else if (countCharacter < 1 && c.getType() == Card.CardType.CHARACTER) {
-                murderCards.add(c);
-                countCharacter++;
-            } else if (countEstate < 1 && c.getType() == Card.CardType.ESTATE) {
-                murderCards.add(c);
-                countEstate++;
-            }
-
-            // Stop the loop when one card of each type has been added to murderCards
-            if (countWeapon == 1 && countCharacter == 1 && countEstate == 1) {
-                break;
-            }
-        }
-        for(Card c: murderCards){
-            deck.remove(c);
-        }
-    }
-
-    /**
-     * distributes cards as equally as possible between the players
-     */
-    public void distributeCards(){
-        int playerCount = Main.UI.getPlayerCount();
-
-        if (playerCount < 3 || playerCount > 4) {
-            throw new IllegalArgumentException("The number of characters must be between 3 and 4.");
-        }
-
-        // Shuffle the deck of cards
-        Collections.shuffle(deck);
-
-        int numCardsPerPlayer = deck.size() / playerCount;
-        int remainingCards = deck.size() % playerCount;
-
-        int cardIndex = 0;
-        while (cardIndex < deck.size()) {
-            int numCardsToDeal = numCardsPerPlayer + (remainingCards > 0 ? 1 : 0);
-            for (int i = 0; i < numCardsToDeal; i++) {
-                characters.get(cardIndex % playerCount).addCards(deck.get(cardIndex));
-                cardIndex++;
-            }
-            remainingCards--;
-        }
-    }
-
-    // Getters for board dimensions
+    // Public methods
     public int getBoardHeight() {
         return boardHeight;
     }
@@ -156,112 +58,162 @@ public class Board {
     public int getBoardWidth() {
         return boardWidth;
     }
-
-    public String toString(){
-
-        //Draw the first line
-        StringBuilder r = new StringBuilder();
-        r.append("+");
-        for (int j = 0; j != boardWidth; ++j) {
-            r.append("---");
-            r.append("+");
-        }
-        r.append("\n");
-
-        //Draw the rest of the lines
-        for (int i = 0; i < boardHeight; ++i) {
-            StringBuilder d = new StringBuilder();
-
-            d.append("|");
-            for (int j = 0; j != boardWidth; ++j) {
-
-                boolean f = true;
-                for(Character c : characters) {
-                    if (c.isHere(j, i)) {
-                        d.append(" " + c.getInitial() + " ");
-                        f = false;
-                        break;
-                    }
-                }
-
-                for(Estate e : estates){
-                    if(j >= e.getX() && j <= e.getX2() &&
-                            i >= e.getY() && i <= e.getY2()) {
-                        if(e instanceof GreyArea) {
-                            d.append(" x ");
-                            f = false;
-                            break;
-                        }
-                    }
-                }
-
-                if(f){ d.append("   "); }
-
-                    f = true;
-                    for(Estate e : estates) {
-                        if(j >= e.getX() && j < e.getX2() &&
-                                i >= e.getY() && i <= e.getY2()) {
-                            d.append(" ");
-                            f = false;
-                            break;
-                        }
-                    }
-
-                    if(f){
-                        if((i == 3 && j == 6)   ||
-                           (i == 5 && j == 16)  ||
-                           (i == 18 && j == 6)  ||
-                           (i == 21 && j == 16) ||
-                           (i == 12 && j == 8)  ||
-                           (i == 11 && j == 14)) {
-                            d.append(" ");
-                        } else {
-                            d.append("|");
-                        }
-                    }
-
-            }
-            d.append("\n");
-            d.append("+");
-
-            for (int j = 0; j != boardWidth; ++j) {
-                boolean f = true;
-                for(Estate e: estates) {
-                    if(j >= e.getX() && j <= e.getX2() &&
-                       i >= e.getY() && i < e.getY2()) {
-                        d.append("   ");
-                        f = false;
-                        break;
-                    }
-                }
-
-                if(f) {
-                    if((i == 6 && j == 5)   ||
-                       (i == 6 && j == 20)  ||
-                       (i == 16 && j == 3)  ||
-                       (i == 16 && j == 18) ||
-                       (i == 9 && j == 12)  ||
-                       (i == 13 && j == 11)) {
-                        d.append("   ");
-                    } else {
-                        d.append("---");
-                    }
-                }
-                f = true;
-                for(Estate e : estates){
-                    if(j >= e.getX() && j < e.getX2() &&
-                       i >= e.getY() && i < e.getY2()) {
-                        d.append(" ");
-                        f = false;
-                        break;
-                    }
-                }
-                if(f) { d.append("+"); }
-            }
-            d.append("\n");
-            r.append(d);
-        }
-        return r.toString();
+    
+    public List<Estate> getEstates() {
+        return Collections.unmodifiableList(estates);
     }
+
+    public List<Character> getCharacters() {
+        return characters;
+    }
+    
+    public List<String> getWeapons() {
+        return Weapons;
+    }
+    
+    public Set<Card> getMurderCards() {
+        return murderCards;
+    }
+
+    /**
+     * Retrieve the estate at the specified coordinates.
+     */
+    public Estate getEstateAt(int x, int y) {
+        for (Estate estate : this.getEstates()) {
+            if (x >= estate.getX() && x <= estate.getX2() && y >= estate.getY() && y <= estate.getY2()) {
+                return estate;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check if the provided coordinate is an estate.
+     */
+    public boolean isEstate(Coord coord) {
+        Estate estate = getEstateAt(coord.getX(), coord.getY());
+        return estate != null;
+    }
+    
+    public void highlightCells(List<Coord> shortestPath, int remainingMoves){
+        validHighlightedCells.clear();
+        invalidHighlightedCells.clear();
+    
+        for (int i = 1; i < shortestPath.size(); i++) {
+            if (i <= remainingMoves) {
+                validHighlightedCells.add(shortestPath.get(i));
+            } else {
+                invalidHighlightedCells.add(shortestPath.get(i));
+            }
+        }
+    }
+
+    public List<Coord> getValidHighlightedCells() {
+        return validHighlightedCells;
+    }
+
+    public List<Coord> getInvalidHighlightedCells() {
+        return invalidHighlightedCells;
+    }
+    
+    public void setRemainingMoves(int remainingMoves) {}
+    
+    public void clearHighlightedCells() {
+        validHighlightedCells.clear();
+        invalidHighlightedCells.clear();    
+    }
+
+    public void determineCharacters() {
+        int playerCount = Main.UI.getPlayerCount();
+        switch (playerCount) {
+            case 3:
+                shuffleCharacters(List.of(getCharacterByName("LUCILLA"), getCharacterByName("BERT"), getCharacterByName("MALINA")));
+                break;
+            case 4:
+                shuffleCharacters(characters);
+                break;
+            default:
+                throw new IllegalArgumentException("Case exception: player count is " + playerCount);
+        }
+    }
+
+    // Private methods
+    private void populateDeck() {
+        for (Estate e : estates) {
+            if (!(e instanceof GreyArea)) {
+                deck.add(new Card(e.getName(), Card.CardType.ESTATE));
+            }
+        }
+        for (String name : Weapons) {
+            deck.add(new Card(name, Card.CardType.WEAPON));
+        }
+        for (Character c : characters) {
+            deck.add(new Card(c.getName().toString(), Card.CardType.CHARACTER));
+        }
+    }    
+
+    private Character getCharacterByName(String name) {
+        return characters.stream()
+                .filter(character -> character.getName().toString().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void shuffleCharacters(List<Character> chars) {
+        List<Character> mutableChars = new ArrayList<>(chars);
+        Collections.shuffle(mutableChars);
+        characters = mutableChars;
+    }
+    
+    private void setMurderCards() {
+        Collections.shuffle(deck);
+        murderCards.add(pickCardOfType(Card.CardType.WEAPON));
+        murderCards.add(pickCardOfType(Card.CardType.CHARACTER));
+        murderCards.add(pickCardOfType(Card.CardType.ESTATE));
+
+        deck.removeAll(murderCards);
+    }
+
+    private Card pickCardOfType(Card.CardType type) {
+        for (Card c : deck) {
+            if (c.getType() == type) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private void distributeCards() {
+        int playerCount = Main.UI.getPlayerCount();
+        if (playerCount < 3 || playerCount > 4) {
+            throw new IllegalArgumentException("The number of characters must be between 3 and 4.");
+        }
+        Collections.shuffle(deck);
+        int numCardsPerPlayer = deck.size() / playerCount;
+        int remainingCards = deck.size() % playerCount;
+
+        distributeCardsToPlayers(numCardsPerPlayer, remainingCards);
+    }
+
+    private void distributeCardsToPlayers(int numCardsPerPlayer, int remainingCards) {
+        int cardIndex = 0;
+        while (cardIndex < deck.size()) {
+            int numCardsToDeal = numCardsPerPlayer + (remainingCards > 0 ? 1 : 0);
+            for (int i = 0; i < numCardsToDeal; i++) {
+                characters.get(cardIndex % Main.UI.getPlayerCount()).addCards(deck.get(cardIndex));
+                cardIndex++;
+            }
+            remainingCards--;
+        }
+    }
+
+    // private void displayCards() {
+    //     for (Character c : characters) {
+    //         System.out.println(c.getName() + " cards:");
+    //         System.out.println(c.getCards() + "\n");
+    //     }
+    //     System.out.println("Murder cards :");
+    //     System.out.println(murderCards);
+    // }
 
 }

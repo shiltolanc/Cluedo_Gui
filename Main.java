@@ -1,21 +1,29 @@
 public class Main {
+
+    // Member variables
     static Initialiser UI = new Initialiser();
     static Board board = new Board();
     public static boolean isGameOn = true;
-    public static int falseAccusationCount = 0;  // count of players who made false accusations
+    public static int falseAccusationCount = 0;
 
+    // Main method
     public static void main(String[] args) {
-        board.determineCharacters();    // Comment out for testing
-        UI.setup();
-        
+        System.setProperty("awt.useSystemAAFontSettings", "on");
+        System.setProperty("swing.aatext", "true");
+    
+        board.determineCharacters();
+        Initialiser.setup();
+    
+        GameController controller = new GameController(board);
+        GameView view = new GameView(board, controller);
+        controller.setView(view);
 
-        while (Main.isGameOn) {
-            for (Character character : board.characters) {
-                character.performTurn(board);
-                if (!Main.isGameOn) 
-                    break;    // Exit the loop if a player has won
-            }
-        }
-        System.out.println("Game over, please close the window.");
+        // while (Main.isGameOn) {
+        //     for (Character character : board.getCharacters()) {
+        //         character.performTurn(board);
+        //         if (!Main.isGameOn) break;
+        //     }
+        // }
+        // System.out.println("Game over, please close the window.");
     }
 }
