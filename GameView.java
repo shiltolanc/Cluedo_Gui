@@ -2,13 +2,10 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class GameView extends JFrame {
@@ -29,15 +26,14 @@ public class GameView extends JFrame {
     private GameController gameController;
     private Estate hoverableEstate;
     private List<Estate> unreachableEstates = new ArrayList<>();
-    private Map<String, BufferedImage> weaponImages = new HashMap<>();
+    private ImageLoader imageLoader = new ImageLoader();
+    private Map<String, BufferedImage> weaponImages = imageLoader.getImages();
     
     // Constructors
     public GameView(Board board, GameController gameController) {
         this.board = board;
         this.gameController = gameController;
-
-        // Load weapon images
-        loadWeaponImages();
+        weaponImages = imageLoader.getImages(); // Retrieve weapon images
     
         // Basic JFrame settings
         setTitle("Hobby Detectives");
@@ -92,7 +88,7 @@ public class GameView extends JFrame {
     }
     
     public void updatePlayerTurnLabel(String playerName) {
-        Color playerColor = getPlayerColor(playerName.charAt(0));
+        Color playerColor = gameController.determinePlayerColor(playerName.charAt(0));
         Icon playerIcon = new PlayerIcon(playerColor);
         playerTurnLabel.setFont(new Font("Arial", Font.BOLD, 18));
         playerTurnLabel.setIcon(playerIcon);
@@ -125,7 +121,7 @@ public class GameView extends JFrame {
 
     public void addBoardMouseMotionListener(MouseMotionListener listener) {
         boardPanel.addMouseMotionListener(listener);
-    }
+    }    
 
     public void updatePlayerCards(Set<Card> cards) {
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -257,34 +253,6 @@ public class GameView extends JFrame {
 
         // Add the logger JPanel to the infoPanel
         infoPanel.add(loggerPanel);
-    }
-
-    private Color getPlayerColor(char initial) {
-        switch(initial) {
-            case 'L':
-                return Color.GREEN;
-            case 'B':
-                return Color.YELLOW;
-            case 'M':
-                return Color.BLUE;
-            case 'P':
-                return Color.RED;
-            default:
-                return Color.BLACK;
-        }
-    }
-
-    private void loadWeaponImages() {
-        // Initialize weapon images
-        try {
-            weaponImages.put("Broom", ImageIO.read(getClass().getResource("/images/broom.png")));
-            weaponImages.put("Scissors", ImageIO.read(getClass().getResource("/images/scissors.png")));
-            weaponImages.put("Knife", ImageIO.read(getClass().getResource("/images/knife.png")));
-            weaponImages.put("Shovel", ImageIO.read(getClass().getResource("/images/shovel.png")));
-            weaponImages.put("iPad", ImageIO.read(getClass().getResource("/images/ipad.png")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void drawBoard(Graphics2D g) {

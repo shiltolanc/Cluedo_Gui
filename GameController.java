@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.util.*;
@@ -15,23 +16,18 @@ public class GameController implements MouseListener, MouseMotionListener {
     private int remainingMoves;
     private Timer diceRollTimer;
     private int diceRollCounter = 0;
-    private boolean isAnimating = false;
     private Estate hoverableEstate = null;
     private List<Estate> unreachableEstates = new ArrayList<>();
     private List<Coord> hoverableEntrances = new ArrayList<>();
     private List<Coord> unreachableEntrances = new ArrayList<>();
+    private AnimationController animationController;
 
     // Constructor
-    public GameController(Board board){
+    public GameController(Board board) {
         this.board = board;
-        // Update animated positions for all characters
-        for (Character character : board.getCharacters()) {
-            character.setAnimatedX(character.getX());
-            character.setAnimatedY(character.getY());
-        }
-        currentPlayer = board.getCharacters().get(0);  // Set currentPlayer to the first character at the start
-        currentPlayer.setAnimatedX(currentPlayer.getX());
-        currentPlayer.setAnimatedY(currentPlayer.getY());
+        // Initialize the currentPlayer
+        currentPlayer = board.getCharacters().get(0);
+        initAnimationController();
     }
     
     // Public methods
@@ -51,12 +47,34 @@ public class GameController implements MouseListener, MouseMotionListener {
         return new ArrayList<>(hoverableEntrances);
     }
 
+    private void initAnimationController() {
+        this.animationController = new AnimationController(view, board, currentPlayer, remainingMoves);
+    }
+
+    public Color determinePlayerColor(char initial) {
+        switch(initial) {
+            case 'L':
+                return Color.GREEN;
+            case 'B':
+                return Color.YELLOW;
+            case 'M':
+                return Color.BLUE;
+            case 'P':
+                return Color.RED;
+            default:
+                return Color.BLACK;
+        }
+    }    
+
+    public void initListeners() {
+        view.addRollDiceButtonListener(this::handleRollDiceButton);
+        view.addBoardMouseListener(this);
+        view.addBoardMouseMotionListener(this);
+    }
+
     public void setView(GameView view) {
         this.view = view;
-        this.view.addBoardMouseListener(this);
-        this.view.addBoardMouseMotionListener(this);
-        this.view.addRollDiceButtonListener(this::handleRollDiceButton);
-
+        initAnimationController(); // Re-initialize the animationController with the updated view
         currentRoll = 0;  // Set roll to zero at start
         rollCompleted = false;
         view.updatePlayerTurnLabel(currentPlayer.getName().name()); // Set initial current player turn label
@@ -76,7 +94,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         hoverableEstate = null;
         unreachableEstates.clear();
 
-        if (rollCompleted && !isAnimating) {
+        if (rollCompleted && !animationController.isAnimating()) {
             Dimension boardPanelSize = view.getBoardPanelSize();
             int cellSize = Math.min(boardPanelSize.width / board.getBoardWidth(), boardPanelSize.height / board.getBoardHeight());
 
@@ -137,7 +155,7 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     // Private methods
     private void handleMouseAction(MouseEvent e) {
-        if (rollCompleted && !isAnimating) {
+        if (rollCompleted && !animationController.isAnimating()) {
             Dimension boardPanelSize = view.getBoardPanelSize();
             int cellSize = Math.min(boardPanelSize.width / board.getBoardWidth(), boardPanelSize.height / board.getBoardHeight());
     
@@ -162,7 +180,7 @@ public class GameController implements MouseListener, MouseMotionListener {
                 List<Coord> shortestPath = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, targetPosition, occupiedCells);
     
                 if (shortestPath.size() - 1 <= remainingMoves && shortestPath.size() > 1) {
-                    beginMoveAnimation(shortestPath, 100, () -> {
+                    animationController.beginMoveAnimation(currentPlayer, shortestPath, 100, () -> {
                         currentPlayer.setX(x);
                         currentPlayer.setY(y);
                         view.repaint();
@@ -295,7 +313,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         List<Coord> pathToEntrance = DijkstraShortestPath.minimumDistance(board, currentPlayerCoord, entrance, getOccupiedCells());
     
         if (pathToEntrance.size() - 1 <= remainingMoves) {
-            beginMoveAnimation(pathToEntrance, 100, () -> {
+            animationController.beginMoveAnimation(currentPlayer, pathToEntrance, 100, () -> {
                 // Once the player reaches the estate entrance, move them to a random unoccupied square inside the estate
                 moveToRandomPositionInsideEstate(estate);
 
@@ -316,48 +334,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         return occupiedCells;
     }
 
-    private void beginMoveAnimation(List<Coord> path, int durationMs, Runnable onFinished) {
-        // Ensure there's a valid path
-        if (path.isEmpty() || path.size() < 2) {  
-            return;
-        }
-        isAnimating = true;
-        board.highlightCells(path, remainingMoves);
-
-        int totalTime = durationMs * path.size();
-        
-        Timer timer = new Timer(15, null); 
-        long animationStart = System.currentTimeMillis(); 
     
-        timer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                long elapsed = System.currentTimeMillis() - animationStart;
-    
-                if (elapsed >= totalTime) {
-                    timer.stop();
-                    isAnimating = false;
-                    onFinished.run();
-                } else {
-                    double progress = elapsed / (double)totalTime; 
-                    int pathIndex = (int)(progress * (path.size() - 1));
-    
-                    Coord start = path.get(pathIndex);
-                    Coord end = path.get(pathIndex + 1);
-    
-                    double cellProgress = progress * (path.size() - 1) - pathIndex;
-                    double newX = start.getX() + (end.getX() - start.getX()) * cellProgress; 
-                    double newY = start.getY() + (end.getY() - start.getY()) * cellProgress; 
-    
-                    currentPlayer.setAnimatedX(newX);
-                    currentPlayer.setAnimatedY(newY);
-                    view.repaint();
-                }
-            }
-        });
-
-        timer.start(); 
-    }
 
     // Nested
     class Dice {

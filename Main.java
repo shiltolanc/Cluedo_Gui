@@ -17,6 +17,7 @@ public class Main {
         GameController controller = new GameController(board);
         GameView view = new GameView(board, controller);
         controller.setView(view);
+        controller.initListeners();
 
         // while (Main.isGameOn) {
         //     for (Character character : board.getCharacters()) {

@@ -16,6 +16,8 @@ public class Character {
     public Character(int x, int y, String initial, Direction direction) {
         this.x = x;
         this.y = y;
+        this.animatedX = x;
+        this.animatedY = y;
         this.initial += initial;
         this.direction = direction;
     }
