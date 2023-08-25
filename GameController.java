@@ -47,10 +47,6 @@ public class GameController implements MouseListener, MouseMotionListener {
         return new ArrayList<>(hoverableEntrances);
     }
 
-    private void initAnimationController() {
-        this.animationController = new AnimationController(view, board, currentPlayer, remainingMoves);
-    }
-
     public Color determinePlayerColor(char initial) {
         switch(initial) {
             case 'L':
@@ -239,6 +235,10 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
     }
 
+    private void initAnimationController() {
+        this.animationController = new AnimationController(view, board, currentPlayer, remainingMoves);
+    }
+
     private void showCurrentPlayerCards() {
         Set<Card> cards = currentPlayer.getCards();
         view.updatePlayerCards(cards);
@@ -333,8 +333,6 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
         return occupiedCells;
     }
-
-    
 
     // Nested
     class Dice {

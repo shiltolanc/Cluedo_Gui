@@ -2,75 +2,44 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.util.Set;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class GameView extends JFrame {
 
-    // Member Variables
-    private Board board;
+    // Panels
     private JPanel boardPanel;
     private JPanel containerPanel;
     private JPanel infoPanel;
+
+    // Labels
     private JLabel playerTurnLabel;
     private JLabel diceRollLabel;
     private JLabel movesRemainingLabel;
+
+    // Buttons
     private JButton rollDiceButton;
     private JButton makeGuessButton;
     private JButton endTurnButton;
+
+    // Text Components
     private JTextArea logs;
     private JList<String> playerCardsList;
+
+    // Game Controllers and Renderers
     private GameController gameController;
-    private Estate hoverableEstate;
-    private List<Estate> unreachableEstates = new ArrayList<>();
-    private ImageLoader imageLoader = new ImageLoader();
-    private Map<String, BufferedImage> weaponImages = imageLoader.getImages();
+    private BoardRenderer boardRenderer;
     
     // Constructors
     public GameView(Board board, GameController gameController) {
-        this.board = board;
         this.gameController = gameController;
-        weaponImages = imageLoader.getImages(); // Retrieve weapon images
+        this.boardRenderer = new BoardRenderer(board, gameController);
     
         // Basic JFrame settings
-        setTitle("Hobby Detectives");
-        setSize(940, 650);
-        setLayout(new BorderLayout());
-        setMinimumSize(new Dimension(940, 690));
-        setAlwaysOnTop(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setupFrame();
     
         // Initialize panels
         initBoardPanel();
         initInfoPanel();
-        boardPanel.setBackground(Color.WHITE);    
-    
-        // Add panels to the JFrame
-        add(containerPanel, BorderLayout.CENTER);
-        add(infoPanel, BorderLayout.EAST);
-    
-        // Styling for infoPanel
-        infoPanel.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(12, 12, 12, 12),
-                BorderFactory.createTitledBorder(
-                    BorderFactory.createBevelBorder(BevelBorder.LOWERED),
-                    "Hobby Detectives",
-                    TitledBorder.CENTER,
-                    TitledBorder.TOP,
-                    new Font("Gilroy", Font.BOLD, 24),
-                    Color.BLACK
-                )
-            )
-        );
-    
-        // Set initial state for the game
-        updatePlayerTurnLabel(board.getCharacters().get(0).getName().name());
-    
-        // Logger initialization
         initLogger();
     
         // Display the JFrame
@@ -79,7 +48,6 @@ public class GameView extends JFrame {
 
     // Public Methods
     public Dimension getBoardPanelSize() {
-        // Get board panel dimensions so mouselistener works correctly when window is resized
         return boardPanel.getSize();
     }
 
@@ -136,12 +104,21 @@ public class GameView extends JFrame {
     }
 
     // Private Methods
+    private void setupFrame() {
+        setTitle("Hobby Detectives");
+        setSize(940, 650);
+        setLayout(new BorderLayout());
+        setMinimumSize(new Dimension(940, 690));
+        setAlwaysOnTop(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
     private void initBoardPanel() {
         boardPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                drawBoard((Graphics2D) g);
+                boardRenderer.drawBoard((Graphics2D) g, this);
             }
         };
     
@@ -149,85 +126,82 @@ public class GameView extends JFrame {
         containerPanel = new JPanel(new BorderLayout());
         containerPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 12));
         containerPanel.add(boardPanel);
+        boardPanel.setBackground(Color.WHITE);
+        add(containerPanel, BorderLayout.CENTER);
     }
 
     private void initInfoPanel() {
+        setupInfoPanel();
+        setupPlayerTurnPanel();
+        setupDiceAndMovesPanel();
+        setupButtons();
+        setupPlayerCardsPanel();
+        addComponentsToInfoPanel();
+    }
+    
+    private void setupInfoPanel() {
         infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setPreferredSize(new Dimension(275, 500));
-
-        // Players turn label
+        infoPanel.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(12, 12, 12, 12),
+                BorderFactory.createTitledBorder(
+                    BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+                    "Hobby Detectives",
+                    TitledBorder.CENTER,
+                    TitledBorder.TOP,
+                    new Font("Gilroy", Font.BOLD, 24),
+                    Color.BLACK
+                )
+            )
+        );
+    }
+    
+    private void setupPlayerTurnPanel() {
         playerTurnLabel = new JLabel("Player's turn: ");
         playerTurnLabel.setOpaque(true);
         playerTurnLabel.setHorizontalAlignment(JLabel.CENTER);
-
-        // Create a panel to house the label
+    
         JPanel playerTurnPanel = new JPanel(new BorderLayout());
-
-        // Set the height for the panel
-        int panelHeight = 80;
-        playerTurnPanel.setPreferredSize(new Dimension(getWidth(), panelHeight));
-        playerTurnPanel.setMaximumSize(new Dimension(getWidth(), panelHeight));
+        playerTurnPanel.setPreferredSize(new Dimension(getWidth(), 80));
+        playerTurnPanel.setMaximumSize(new Dimension(getWidth(), 80));
         playerTurnPanel.add(playerTurnLabel, BorderLayout.CENTER);
-
-        playerTurnPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(12,12,0,12), BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED),"Player's turn", TitledBorder.CENTER, TitledBorder.CENTER, new Font("Arial", Font.PLAIN, 12), Color.BLACK)));
-
-        // Dice roll
-        diceRollLabel = new JLabel("0");
-        JPanel diceRollPanel = new JPanel();
-        diceRollPanel.setLayout(new BorderLayout());
-        diceRollPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(12,12,12,12), BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED),"Dice roll", TitledBorder.CENTER, TitledBorder.CENTER, new Font("Arial", Font.PLAIN, 12), Color.BLACK)));
-        diceRollPanel.add(diceRollLabel, BorderLayout.CENTER);
-        // Font settings for moves remaining label
-        Font labelFont2 = diceRollLabel.getFont();
-        diceRollLabel.setFont(new Font(labelFont2.getName(), Font.PLAIN, 32));
-        diceRollLabel.setHorizontalAlignment(JLabel.CENTER);
-        
-        // Moves remaining
-        movesRemainingLabel = new JLabel("0");
-        JPanel movesRemainingPanel = new JPanel();
-        movesRemainingPanel.setLayout(new BorderLayout());
-        movesRemainingPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(12,12,12,12), BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED),"Moves left", TitledBorder.CENTER, TitledBorder.CENTER, new Font("Arial", Font.PLAIN, 12), Color.BLACK)));
-
-        movesRemainingPanel.add(movesRemainingLabel, BorderLayout.CENTER);
-        // Font settings for moves remaining label
-        Font labelFont = movesRemainingLabel.getFont();
-        movesRemainingLabel.setFont(new Font(labelFont.getName(), Font.PLAIN, 32));
-        movesRemainingLabel.setHorizontalAlignment(JLabel.CENTER);
-
-        // Panel to hold dice roll and moves remaining side by side
+        playerTurnPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(12,12,0,12),
+            BorderFactory.createTitledBorder(
+                BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+                "Player's turn",
+                TitledBorder.CENTER,
+                TitledBorder.CENTER,
+                new Font("Arial", Font.PLAIN, 12),
+                Color.BLACK
+            )
+        ));
+    
+        infoPanel.add(playerTurnPanel);
+    }
+    
+    private void setupDiceAndMovesPanel() {
+        diceRollLabel = createCenteredLabel("0", 32);
+        movesRemainingLabel = createCenteredLabel("0", 32);
+    
+        JPanel diceRollPanel = createTitledPanel("Dice roll", diceRollLabel);
+        JPanel movesRemainingPanel = createTitledPanel("Moves left", movesRemainingLabel);
+    
         JPanel diceAndMovesPanel = new JPanel(new GridLayout(1, 2));
-        diceAndMovesPanel.setPreferredSize(new Dimension(getWidth(), 80)); // Row height
-        
+        diceAndMovesPanel.setPreferredSize(new Dimension(getWidth(), 80));
         diceAndMovesPanel.add(diceRollPanel);
         diceAndMovesPanel.add(movesRemainingPanel);
-
+    
+        infoPanel.add(diceAndMovesPanel);
+    }
+    
+    private void setupButtons() {
         rollDiceButton = new JButton("Roll Dice!");
         makeGuessButton = new JButton("Make a Guess");
         endTurnButton = new JButton("End Turn");
-
-        // Display the current players cards
-        playerCardsList = new JList<>(); 
-        playerCardsList.setFixedCellHeight(20);
-        playerCardsList.setFixedCellWidth(220);
-        JScrollPane playerCardsScrollPane = new JScrollPane(playerCardsList);
-        // Set a minimum and preferred size for the JScrollPane
-        Dimension listSize = new Dimension(infoPanel.getWidth(), 80);
-        playerCardsScrollPane.setMinimumSize(listSize);
-        playerCardsScrollPane.setPreferredSize(listSize);
-        
-        JPanel cardPanel = new JPanel();
-        cardPanel.add(playerCardsList);
-
-        playerCardsList.setBackground(Color.getColor(getName())); // Set the JList item color to the same color as the background color
-        playerCardsList.setSelectionBackground(Color.getColor(getName())); // Set the JList selection background color to backround color
-        playerCardsList.setFocusable(false); // Make JList items unselectable
-
-        cardPanel.setBorder(BorderFactory.createTitledBorder("Your Cards")); // Set the border
-        cardPanel.add(playerCardsScrollPane);
-
-        infoPanel.add(playerTurnPanel);
-        infoPanel.add(diceAndMovesPanel);
+    
         infoPanel.add(Box.createRigidArea(new Dimension(0,20)));
         infoPanel.add(rollDiceButton);
         infoPanel.add(Box.createRigidArea(new Dimension(0,20)));
@@ -235,9 +209,56 @@ public class GameView extends JFrame {
         infoPanel.add(Box.createRigidArea(new Dimension(0,20)));
         infoPanel.add(endTurnButton);
         infoPanel.add(Box.createRigidArea(new Dimension(0,20)));
+    }
+    
+    private void setupPlayerCardsPanel() {
+        playerCardsList = new JList<>();
+        playerCardsList.setFixedCellHeight(20);
+        playerCardsList.setFixedCellWidth(220);
+        playerCardsList.setBackground(Color.getColor(infoPanel.getName()));
+        playerCardsList.setSelectionBackground(Color.getColor(infoPanel.getName()));
+        playerCardsList.setFocusable(false);
+    
+        JScrollPane playerCardsScrollPane = new JScrollPane(playerCardsList);
+        playerCardsScrollPane.setMinimumSize(new Dimension(220, 80));
+        playerCardsScrollPane.setPreferredSize(new Dimension(220, 80));
+        playerCardsScrollPane.setBorder(null);
+
+        JPanel cardPanel = new JPanel();
+        cardPanel.setBorder(BorderFactory.createTitledBorder("Your Cards"));
+        cardPanel.add(playerCardsScrollPane);
+    
         infoPanel.add(cardPanel);
     }
-
+    
+    private JLabel createCenteredLabel(String text, int fontSize) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        label.setHorizontalAlignment(JLabel.CENTER);
+        return label;
+    }
+    
+    private JPanel createTitledPanel(String title, JComponent component) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(12,12,12,12),
+            BorderFactory.createTitledBorder(
+                BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+                title,
+                TitledBorder.CENTER,
+                TitledBorder.CENTER,
+                new Font("Arial", Font.PLAIN, 12),
+                Color.BLACK
+            )
+        ));
+        panel.add(component, BorderLayout.CENTER);
+        return panel;
+    }
+    
+    private void addComponentsToInfoPanel() {
+        add(infoPanel, BorderLayout.EAST);
+    }
+    
     private void initLogger() {
         logs = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(logs);
@@ -253,205 +274,7 @@ public class GameView extends JFrame {
 
         // Add the logger JPanel to the infoPanel
         infoPanel.add(loggerPanel);
-    }
-
-    private void drawBoard(Graphics2D g) {
-        // Enable Anti-aliasing for shapes and text
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-
-        // Calculate the size of each cell dynamically
-        int cellSize = Math.min(boardPanel.getWidth() / board.getBoardWidth(), boardPanel.getHeight() / board.getBoardHeight());
-
-        // Draw the board grid
-        g.setColor(Color.LIGHT_GRAY);
-        for (int j = 0; j <= board.getBoardWidth(); j++) {
-            g.drawLine(j * cellSize, 0, j * cellSize, board.getBoardHeight() * cellSize); // Vertical grid lines
-        }
-        for (int i = 0; i <= board.getBoardHeight(); i++) {
-            g.drawLine(0, i * cellSize, board.getBoardWidth() * cellSize, i * cellSize); // Horizontal grid lines
-        }
-
-        // Draw highlighted cells
-        g.setColor(new Color(0, 255, 0, 150)); // Green
-        for (Coord cell : board.getValidHighlightedCells()) {
-            g.fillRect(cell.getX() * cellSize, cell.getY() * cellSize, cellSize, cellSize);
-        }
-        g.setColor(new Color(255, 0, 0, 150)); // Red
-        for (Coord cell : board.getInvalidHighlightedCells()) {
-            g.fillRect(cell.getX() * cellSize, cell.getY() * cellSize, cellSize, cellSize);
-        }
-
-        // Draw estates and grey areas
-        for (Estate estate : board.getEstates()) {
-            int thickness = 3;  // Line thickness
-            g.setStroke(new BasicStroke(thickness));
-
-            if (!(estate instanceof GreyArea)) {
-                g.setColor(Color.WHITE);
-                g.fillRect(estate.getX() * cellSize, estate.getY() * cellSize, (estate.getX2() - estate.getX() + 1) * cellSize, (estate.getY2() - estate.getY() + 1) * cellSize);
-                g.setColor(Color.BLACK);
-                g.drawRect(estate.getX() * cellSize, estate.getY() * cellSize, (estate.getX2() - estate.getX() + 1) * cellSize, (estate.getY2() - estate.getY() + 1) * cellSize);
-            } else {
-                g.setColor(Color.LIGHT_GRAY);
-                g.fillRect(estate.getX() * cellSize, estate.getY() * cellSize, (estate.getX2() - estate.getX() + 1) * cellSize, (estate.getY2() - estate.getY() + 1) * cellSize);
-            }
-        }
-        // // Draw the estates with colors
-        // for (Estate estate : board.getEstates()) {
-        //     switch (estate.getName()) {
-        //         case "Haunted House":
-        //             g.setColor(new Color(205, 92, 92, 150));  // Light Coral
-        //             break;
-        //         case "Manic Manor":
-        //             g.setColor(new Color(85, 107, 47, 150));  // Dark Olive Green
-        //             break;
-        //         case "Calamity Castle":
-        //             g.setColor(new Color(70, 130, 180, 150));  // Steel Blue
-        //             break;
-        //         case "Peril Palace":
-        //             g.setColor(new Color(139, 69, 19, 150));  // Saddle Brown
-        //             break;
-        //         case "Visitation Villa":
-        //             g.setColor(new Color(255, 140, 0, 150));  // Dark Orange
-        //             break;
-        //         default:
-        //             g.setColor(Color.LIGHT_GRAY);
-        //             break;
-        //     }
-        //     g.fillRect(estate.getX() * cellSize + 2, estate.getY() * cellSize + 2, (estate.getX2() - estate.getX() + 1) * cellSize - 3, (estate.getY2() - estate.getY() + 1) * cellSize - 3);
-        // }
-
-        // Draw estate entrances
-        int thickness = 3;  // Line thickness
-        g.setStroke(new BasicStroke(thickness));
-
-        List<Coord> redEntrances = gameController.getUnreachableEntrances();
-        List<Coord> greenEntrances = gameController.getHoverableEntrances();
-        hoverableEstate = gameController.getHoverableEstate();
-        unreachableEstates = gameController.getUnreachableEstates();
-
-        for (Estate estate : board.getEstates()) {
-            if (!(estate instanceof GreyArea) && estate.getEntrances() != null) {
-                for (Coord entrance : estate.getEntrances()) {
-                    int rectX = entrance.getX() * cellSize;
-                    int rectY = entrance.getY() * cellSize;
-            
-                    // Check if the entrance is the closest one
-                    if (redEntrances.contains(entrance) || greenEntrances.contains(entrance)) {
-                        if (redEntrances.contains(entrance)) {
-                            g.setColor(new Color(255, 105, 105)); // Red
-                        } else if (greenEntrances.contains(entrance)) {
-                            g.setColor(new Color(105, 255, 105)); // Green
-                        }
-                    } else {
-                        g.setColor(Color.ORANGE);
-                    }
-
-                    // Determine which side the entrance is on
-                    if (entrance.getX() == estate.getX()) { // Left side
-                        g.drawLine(rectX, rectY, rectX, rectY + cellSize);
-                    } else if (entrance.getX() == estate.getX2()) { // Right side
-                        g.drawLine(rectX + cellSize, rectY, rectX + cellSize, rectY + cellSize);
-                    } else if (entrance.getY() == estate.getY()) { // Top side
-                        g.drawLine(rectX, rectY, rectX + cellSize, rectY);
-                    } else if (entrance.getY() == estate.getY2()) { // Bottom side
-                        g.drawLine(rectX, rectY + cellSize, rectX + cellSize, rectY + cellSize);
-                    }
-                }
-            }
-        }
-
-        // Draw estates with hover effect
-        if (hoverableEstate != null) {
-            g.setColor(new Color(0, 255, 0, 150)); // Green
-            g.fillRect(hoverableEstate.getX() * cellSize + 2, hoverableEstate.getY() * cellSize + 2, (hoverableEstate.getX2() - hoverableEstate.getX() + 1) * cellSize - 3, (hoverableEstate.getY2() - hoverableEstate.getY() + 1) * cellSize - 3);
-        }
-
-        for (Estate estate : unreachableEstates) {
-            g.setColor(new Color(255, 0, 0, 150)); // Red            
-            g.fillRect(estate.getX() * cellSize + 2, estate.getY() * cellSize + 2, (estate.getX2() - estate.getX() + 1) * cellSize - 3, (estate.getY2() - estate.getY() + 1) * cellSize - 3);
-        }
-
-        // Reset the color and stroke to default for any further drawing
-        g.setColor(Color.BLACK);
-        g.setStroke(new BasicStroke(1));
-
-        // Print names on each estate
-        Font boardFont = new Font("Gilroy", Font.BOLD, cellSize / 2); // Dynamically adjust font size based on cell size
-        g.setFont(boardFont);
-        g.setColor(Color.BLACK);
-        // g.setColor(Color.WHITE);
-
-        for (Estate estate : board.getEstates()) {
-            if (!(estate instanceof GreyArea)) {
-                // Convert estate name to uppercase and split by spaces
-                String[] nameParts = estate.getName().toUpperCase().split(" ");
-                
-                // Calculate total height of all lines combined
-                int totalHeight = nameParts.length * cellSize / 2;
-        
-                // Calculate the starting y coordinate
-                int offsetY = cellSize / 2;
-                int nameY = estate.getY() * cellSize + (estate.getY2() - estate.getY() + 1) * cellSize / 2 - totalHeight / 2 + offsetY;
-        
-                for (String part : nameParts) {
-                    // Calculate width of the text
-                    int textWidth = g.getFontMetrics().stringWidth(part);
-                    
-                    // Calculate the x coordinate to center the text
-                    int nameX = estate.getX() * cellSize + (estate.getX2() - estate.getX() + 1) * cellSize / 2 - textWidth / 2;
-        
-                    g.drawString(part, nameX, nameY);
-                    nameY += cellSize / 2; // Move to the next line
-                }
-            }
-        }
-
-        // Draw weapons at specific coordinates
-        drawWeapon(g, "Broom", 5, 20);
-        drawWeapon(g, "Scissors", 18, 6);
-        drawWeapon(g, "Knife", 3, 3);
-        drawWeapon(g, "Shovel", 10, 10);
-        drawWeapon(g, "iPad", 20, 21);
-
-        // Draw characters
-        FontMetrics fm = g.getFontMetrics();
-        for (Character character : board.getCharacters()) {
-            switch(character.getInitial()) {
-                case "L":
-                    g.setColor(Color.GREEN);
-                    break;
-                case "B":
-                    g.setColor(Color.YELLOW);
-                    break;
-                case "M":
-                    g.setColor(Color.BLUE);
-                    break;
-                case "P":
-                    g.setColor(Color.RED);
-                    break;
-            }
-            g.fillOval((int)(character.getAnimatedX() * cellSize) + 2,  (int)(character.getAnimatedY() * cellSize) + 2, cellSize - 3, cellSize - 3);
-            g.setColor(Color.BLACK);
-            
-            int textWidth = fm.stringWidth(character.getInitial());
-            int textHeight = fm.getAscent();
-            int centeredX = (int)(character.getAnimatedX() * cellSize) + (cellSize - textWidth) / 2;
-            int centeredY = (int)(character.getAnimatedY() * cellSize) + (cellSize + textHeight) / 2;
-            g.drawString(character.getInitial(), centeredX, centeredY);
-        }
-    }
-
-    private void drawWeapon(Graphics2D g, String weaponName, int x, int y) {
-        int cellSize = Math.min(boardPanel.getWidth() / board.getBoardWidth(), boardPanel.getHeight() / board.getBoardHeight());
-        BufferedImage weaponImage = weaponImages.get(weaponName);
-        if (weaponImage != null) {
-            g.drawImage(weaponImage, x * cellSize, y * cellSize, cellSize, cellSize, null);
-        }
-    }
+    }    
     
     // Nested
     class PlayerIcon implements Icon {
