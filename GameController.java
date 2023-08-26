@@ -357,6 +357,9 @@ public class GameController implements MouseListener, MouseMotionListener {
                 board.setRemainingMoves(remainingMoves);
                 view.updateMovesRemainingLabel(remainingMoves);
 
+                // Clear the visited cells since the player entered an estate
+                visitedCellsThisTurn.clear();
+
                 //handleEndTurnButton();  // End the player's turn after entering the estate
             });
         } else {
