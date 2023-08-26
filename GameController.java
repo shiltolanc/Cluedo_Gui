@@ -98,7 +98,6 @@ public class GameController implements MouseListener, MouseMotionListener {
             int y = e.getY() / cellSize;
 
             Coord currentPlayerPosition = new Coord(currentPlayer.getX(), currentPlayer.getY());
-            // Coord hoverPosition = new Coord(x, y);
             Coord targetPosition = new Coord(x, y);
 
             Estate currentEstate = board.getEstateAt(currentPlayerPosition.getX(), currentPlayerPosition.getY());

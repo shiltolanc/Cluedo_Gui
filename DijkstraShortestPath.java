@@ -93,10 +93,10 @@ public class DijkstraShortestPath {
 
         for (int[] offset : offsets) {
             Coord neighbor = new Coord(coord.getX() + offset[0], coord.getY() + offset[1]);
-            if (isValid(board, coord, occupiedCells, target)) {
+            if (isValid(board, neighbor, occupiedCells, target)) {
                 neighbors.add(neighbor);
             }
-        }
+        }        
         return neighbors;
     }
 
