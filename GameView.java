@@ -151,7 +151,7 @@ public class GameView extends JFrame {
                     "Hobby Detectives",
                     TitledBorder.CENTER,
                     TitledBorder.TOP,
-                    new Font("Gilroy", Font.BOLD, 24),
+                    new Font("Arial", Font.BOLD, 24),
                     Color.BLACK
                 )
             )

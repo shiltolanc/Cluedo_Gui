@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,21 +15,31 @@ public class BoardRenderer {
     private Map<String, BufferedImage> weaponImages = imageLoader.getImages();
     private Estate hoverableEstate;
     private List<Estate> unreachableEstates = new ArrayList<>();
+    private Font gilroyFont;
 
     // Constructor
     public BoardRenderer(Board board, GameController gameController) {
         this.board = board;
         this.gameController = gameController;
         this.weaponImages = imageLoader.getImages();
+
+        // Load custom font
+        try {
+            gilroyFont = FontLoader.loadFont("/fonts/Gluten-Light.ttf");
+        } catch (IOException | FontFormatException e) {
+            gilroyFont = new Font("Arial", Font.PLAIN, 12); // fallback
+        }
+        if (gilroyFont == null) {
+            gilroyFont = new Font("Arial", Font.PLAIN, 12); // additional safety fallback
+        }
     }
 
     // Public methods
     public void drawBoard(Graphics2D g, JPanel boardPanel) {
-        // Enable Anti-aliasing for shapes and text
+        // Enable Anti-aliasing for shapes, text and images
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
 
         // Calculate the size of each cell dynamically
         int cellSize = Math.min(boardPanel.getWidth() / board.getBoardWidth(), boardPanel.getHeight() / board.getBoardHeight());
@@ -148,10 +159,10 @@ public class BoardRenderer {
         g.setStroke(new BasicStroke(1));
 
         // Print names on each estate
-        Font boardFont = new Font("Gilroy", Font.BOLD, cellSize / 2); // Dynamically adjust font size based on cell size
+        Font boardFont = gilroyFont.deriveFont(Font.BOLD, cellSize / 2f); // Dynamically adjust font size based on cell size
+        
         g.setFont(boardFont);
         g.setColor(Color.BLACK);
-        // g.setColor(Color.WHITE);
 
         for (Estate estate : board.getEstates()) {
             if (!(estate instanceof GreyArea)) {

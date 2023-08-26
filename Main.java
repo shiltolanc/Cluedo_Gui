@@ -8,9 +8,7 @@ public class Main {
 
     // Main method
     public static void main(String[] args) {
-        System.setProperty("awt.useSystemAAFontSettings", "on");
-        System.setProperty("swing.aatext", "true");
-    
+        
         board.determineCharacters();
         Initialiser.setup();
     
