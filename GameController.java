@@ -27,8 +27,8 @@ public class GameController implements MouseListener, MouseMotionListener {
     // Constructor
     public GameController(Board board) {
         this.board = board;
-        // Initialize the currentPlayer
-        currentPlayer = board.getCharacters().get(0);
+        
+        currentPlayer = board.getCharacters().get(0); // Initialize the currentPlayer
         initAnimationController();
     }
     
@@ -102,7 +102,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         if (!rollCompleted || remainingMoves == 0 || animationController.isAnimating()) {
             board.clearHighlightedCells();
             view.repaint();
-            return; // Exit the method early
+            return;
         }
 
         if (rollCompleted && !animationController.isAnimating()) {
@@ -259,15 +259,11 @@ public class GameController implements MouseListener, MouseMotionListener {
                         view.updateMovesRemainingLabel(remainingMoves);
                         view.logMessage("You rolled a " + currentRoll + "!");
                         rollCompleted = true;
-                        // Re-enable rollDiceButton
-                        view.setRollDiceButtonEnabled(true);
                     }
                 }
             });
     
             diceRollTimer.start();
-        } else {
-            view.logMessage("You already rolled a " + currentRoll + "! Move or pass the turn to the next player.");
         }
     }
 
@@ -285,6 +281,11 @@ public class GameController implements MouseListener, MouseMotionListener {
     }
 
     private void handleEndTurnButton() {
+        // If player ends turn within estate with remaining moves, move to random positon in estate to prevent blocked entrances
+        Estate currentEstate = board.getEstateAt(currentPlayer.getX(), currentPlayer.getY());
+        if (currentEstate != null && remainingMoves > 0) {
+            moveToRandomPositionInsideEstate(currentEstate);
+        }
         view.updatePlayerCards(new HashSet<>()); // Clear the card list as soon as a player's turn ends.
         currentTurn = (currentTurn + 1) % board.getCharacters().size();
         currentPlayer = board.getCharacters().get(currentTurn);
@@ -297,7 +298,8 @@ public class GameController implements MouseListener, MouseMotionListener {
         rollCompleted = false; // Reset roll to false so the next player must roll the dice at the start of their turn
         currentRoll = 0; // Reset the current roll count for the new turn
         board.clearHighlightedCells();
-        visitedCellsThisTurn.clear(); 
+        visitedCellsThisTurn.clear();
+        view.setRollDiceButtonEnabled(true);
         showCurrentPlayerCards(); // Update the card list when it's a new player's turn
         view.repaint();
     }

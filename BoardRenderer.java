@@ -65,7 +65,7 @@ public class BoardRenderer {
         }
 
         // Draw visited cells in lighter gray
-        g.setColor(new Color(220, 220, 220, 100)); // Lighter gray with diagonal dashed
+        g.setColor(new Color(220, 220, 220, 100)); // Lighter gray
         Set<Coord> visitedCellsThisTurn = gameController.getVisitedCellsThisTurn();
         for (Coord cell : visitedCellsThisTurn) {
             g.fillRect(cell.getX() * cellSize, cell.getY() * cellSize, cellSize, cellSize);
