@@ -86,10 +86,18 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        // Clear previous hoverable states
         hoverableEntrances.clear();
         unreachableEntrances.clear();
         hoverableEstate = null;
         unreachableEstates.clear();
+
+        // If rollCompleted is false, or there are no remaining moves, or animationController is animating, then return without processing hover logic
+        if (!rollCompleted || remainingMoves == 0 || animationController.isAnimating()) {
+            board.clearHighlightedCells();
+            view.repaint();
+            return; // Exit the method early
+        }
 
         if (rollCompleted && !animationController.isAnimating()) {
             Dimension boardPanelSize = view.getBoardPanelSize();
