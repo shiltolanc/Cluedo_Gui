@@ -15,7 +15,7 @@ public class BoardRenderer {
     private Map<String, BufferedImage> weaponImages = imageLoader.getImages();
     private Estate hoverableEstate;
     private List<Estate> unreachableEstates = new ArrayList<>();
-    private Font gilroyFont;
+    private Font glutenFont;
 
     // Constructor
     public BoardRenderer(Board board, GameController gameController) {
@@ -25,12 +25,12 @@ public class BoardRenderer {
 
         // Load custom font
         try {
-            gilroyFont = FontLoader.loadFont("/fonts/Gluten-Light.ttf");
+            glutenFont = FontLoader.loadFont("/fonts/Gluten-Light.ttf");
         } catch (IOException | FontFormatException e) {
-            gilroyFont = new Font("Arial", Font.PLAIN, 12); // fallback
+            glutenFont = new Font("Arial", Font.PLAIN, 12); // fallback
         }
-        if (gilroyFont == null) {
-            gilroyFont = new Font("Arial", Font.PLAIN, 12); // additional safety fallback
+        if (glutenFont == null) {
+            glutenFont = new Font("Arial", Font.PLAIN, 12); // additional safety fallback
         }
     }
 
@@ -159,7 +159,7 @@ public class BoardRenderer {
         g.setStroke(new BasicStroke(1));
 
         // Print names on each estate
-        Font boardFont = gilroyFont.deriveFont(Font.BOLD, cellSize / 2f); // Dynamically adjust font size based on cell size
+        Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f); // Dynamically adjust font size based on cell size
         
         g.setFont(boardFont);
         g.setColor(Color.BLACK);
