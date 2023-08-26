@@ -285,6 +285,8 @@ public class GameController implements MouseListener, MouseMotionListener {
         currentPlayer.setAnimatedX(currentPlayer.getX());
         currentPlayer.setAnimatedY(currentPlayer.getY());
         view.updatePlayerTurnLabel(currentPlayer.getName().toString());
+        view.updateDiceRollLabel(0);
+        view.updateMovesRemainingLabel(0);
         view.logMessage("It's now " + currentPlayer.getName() + "'s turn!");
         rollCompleted = false; // Reset roll to false so the next player must roll the dice at the start of their turn
         currentRoll = 0; // Reset the current roll count for the new turn
