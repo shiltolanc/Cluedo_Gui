@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.JPanel;
 
 public class BoardRenderer {
@@ -60,6 +61,13 @@ public class BoardRenderer {
         }
         g.setColor(new Color(255, 0, 0, 150)); // Red
         for (Coord cell : board.getInvalidHighlightedCells()) {
+            g.fillRect(cell.getX() * cellSize, cell.getY() * cellSize, cellSize, cellSize);
+        }
+
+        // Render visited cells in lighter gray
+        g.setColor(new Color(220, 220, 220, 150)); // Lighter gray
+        Set<Coord> visitedCellsThisTurn = gameController.getVisitedCellsThisTurn();
+        for (Coord cell : visitedCellsThisTurn) {
             g.fillRect(cell.getX() * cellSize, cell.getY() * cellSize, cellSize, cellSize);
         }
 

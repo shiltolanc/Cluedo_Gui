@@ -20,6 +20,8 @@ public class GameController implements MouseListener, MouseMotionListener {
     private List<Estate> unreachableEstates = new ArrayList<>();
     private List<Coord> hoverableEntrances = new ArrayList<>();
     private List<Coord> unreachableEntrances = new ArrayList<>();
+    private Set<Coord> visitedCellsThisTurn = new HashSet<>();
+
     private AnimationController animationController;
 
     // Constructor
@@ -45,6 +47,10 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     public List<Coord> getHoverableEntrances() {
         return new ArrayList<>(hoverableEntrances);
+    }
+
+    public Set<Coord> getVisitedCellsThisTurn() {
+        return new HashSet<>(visitedCellsThisTurn);
     }
 
     public Color determinePlayerColor(char initial) {
@@ -108,6 +114,13 @@ public class GameController implements MouseListener, MouseMotionListener {
 
             Coord currentPlayerPosition = new Coord(currentPlayer.getX(), currentPlayer.getY());
             Coord targetPosition = new Coord(x, y);
+            
+            // Check if hovered cell is in visitedCellsThisTurn
+            if (visitedCellsThisTurn.contains(targetPosition)) {
+                board.clearHighlightedCells();
+                view.repaint();
+                return;  // Exit early without highlighting the path
+            }
 
             Estate currentEstate = board.getEstateAt(currentPlayerPosition.getX(), currentPlayerPosition.getY());
             Estate hoveredEstate = board.getEstateAt(x, y);
@@ -126,11 +139,11 @@ public class GameController implements MouseListener, MouseMotionListener {
             }
 
             Set<Coord> occupiedCells = getOccupiedCells();
-            List<Coord> shortestPath = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, targetPosition, occupiedCells);
+            List<Coord> shortestPath = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, targetPosition, occupiedCells, visitedCellsThisTurn);
 
             if (hoveredEstate != null && !(hoveredEstate instanceof GreyArea)) {
                 Coord closestEntrance = findClosestEntrance(currentPlayerPosition, hoveredEstate.getEntrances());
-                List<Coord> pathToClosestEntrance = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, closestEntrance, getOccupiedCells());
+                List<Coord> pathToClosestEntrance = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, closestEntrance, getOccupiedCells(), visitedCellsThisTurn);
         
                 if (pathToClosestEntrance.size() - 1 <= remainingMoves) {
                     hoverableEntrances.add(closestEntrance);
@@ -174,6 +187,12 @@ public class GameController implements MouseListener, MouseMotionListener {
                 view.logMessage("You are already on this square!");
                 return;
             }
+
+            if (visitedCellsThisTurn.contains(targetPosition)) {
+                view.logMessage("You can't backtrack!");
+                return;
+            }
+            
     
             // Check if the clicked position is an estate
             if (board.isEstate(targetPosition)) {
@@ -181,9 +200,12 @@ public class GameController implements MouseListener, MouseMotionListener {
             } else {
                 // Proceed with the usual movement
                 Set<Coord> occupiedCells = getOccupiedCells();
-                List<Coord> shortestPath = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, targetPosition, occupiedCells);
+                List<Coord> shortestPath = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, targetPosition, occupiedCells, visitedCellsThisTurn);
     
                 if (shortestPath.size() - 1 <= remainingMoves && shortestPath.size() > 1) {
+                    // visitedCellsThisTurn.addAll(shortestPath.subList(0, shortestPath.size() - 1)); // Add the path to the visited cells
+                    visitedCellsThisTurn.addAll(shortestPath);
+                    
                     animationController.beginMoveAnimation(currentPlayer, shortestPath, 100, () -> {
                         currentPlayer.setX(x);
                         currentPlayer.setY(y);
@@ -266,7 +288,10 @@ public class GameController implements MouseListener, MouseMotionListener {
         view.logMessage("It's now " + currentPlayer.getName() + "'s turn!");
         rollCompleted = false; // Reset roll to false so the next player must roll the dice at the start of their turn
         currentRoll = 0; // Reset the current roll count for the new turn
+        board.clearHighlightedCells();
+        visitedCellsThisTurn.clear(); 
         showCurrentPlayerCards(); // Update the card list when it's a new player's turn
+        view.repaint();
     }
 
     private Coord findClosestEntrance(Coord destination, List<Coord> entrances) {
@@ -322,7 +347,7 @@ public class GameController implements MouseListener, MouseMotionListener {
 
         // Choose the closest entrance to the player's current position
         Coord entrance = findClosestEntrance(currentPlayerCoord, entrances);
-        List<Coord> pathToEntrance = DijkstraShortestPath.minimumDistance(board, currentPlayerCoord, entrance, getOccupiedCells());
+        List<Coord> pathToEntrance = DijkstraShortestPath.minimumDistance(board, currentPlayerCoord, entrance, getOccupiedCells(), visitedCellsThisTurn);
     
         if (pathToEntrance.size() - 1 <= remainingMoves) {
             animationController.beginMoveAnimation(currentPlayer, pathToEntrance, 100, () -> {

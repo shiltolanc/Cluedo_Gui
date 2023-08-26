@@ -7,7 +7,7 @@ import java.util.*;
 public class DijkstraShortestPath {
 
     // Public methods
-    public static List<Coord> minimumDistance(Board board, Coord source, Coord target, Set<Coord> occupiedCells) {
+    public static List<Coord> minimumDistance(Board board, Coord source, Coord target, Set<Coord> occupiedCells, Set<Coord> visitedCellsThisTurn) {
         Map<Coord, Integer> dist = new HashMap<>();
         Map<Coord, Coord> prev = new HashMap<>();
         List<Coord> unvisited = new ArrayList<>();
@@ -15,7 +15,7 @@ public class DijkstraShortestPath {
         for (int x = 0; x < board.getBoardWidth(); x++) {
             for (int y = 0; y < board.getBoardHeight(); y++) {
                 Coord coord = new Coord(x, y);
-                if (isValid(board, coord, occupiedCells, target)) {
+                if (isValid(board, coord, occupiedCells, target, visitedCellsThisTurn)) {
                     if (coord.equals(source)) {
                         dist.put(coord, 0);
                     } else {
@@ -36,7 +36,7 @@ public class DijkstraShortestPath {
             Coord current = getSmallestDist(unvisited, dist);
             unvisited.remove(current);
 
-            for (Coord neighbor : getNeighbors(board, current, occupiedCells, target)) {
+            for (Coord neighbor : getNeighbors(board, current, occupiedCells, target, visitedCellsThisTurn)) {
                 Integer currDist = dist.get(current);
                 if (currDist != null && currDist != Integer.MAX_VALUE) {
                     int alt = currDist + 1;
@@ -81,7 +81,7 @@ public class DijkstraShortestPath {
     /**
      * Returns the neighbors of the given coordinate
      */
-    private static List<Coord> getNeighbors(Board board, Coord coord, Set<Coord> occupiedCells, Coord target) {
+    private static List<Coord> getNeighbors(Board board, Coord coord, Set<Coord> occupiedCells, Coord target, Set<Coord> visitedCellsThisTurn) {
         List<Coord> neighbors = new ArrayList<>();
 
         int[][] offsets = {
@@ -93,7 +93,7 @@ public class DijkstraShortestPath {
 
         for (int[] offset : offsets) {
             Coord neighbor = new Coord(coord.getX() + offset[0], coord.getY() + offset[1]);
-            if (isValid(board, neighbor, occupiedCells, target)) {
+            if (isValid(board, neighbor, occupiedCells, target, visitedCellsThisTurn)) {
                 neighbors.add(neighbor);
             }
         }        
@@ -103,12 +103,17 @@ public class DijkstraShortestPath {
     /**
      * Checks if a given coordinate is valid based on the board, occupied cells, and target
      */
-    private static boolean isValid(Board board, Coord coord, Set<Coord> occupiedCells, Coord target) {
+    private static boolean isValid(Board board, Coord coord, Set<Coord> occupiedCells, Coord target, Set<Coord> visitedCellsThisTurn) {
         // Ensure the coordinate is not out of the board
         if (coord.getX() < 0 || coord.getX() >= board.getBoardWidth() || coord.getY() < 0 || coord.getY() >= board.getBoardHeight()) {
             return false;
         }
     
+        // Check if the cell has been visited during this turn
+        if (visitedCellsThisTurn.contains(coord) && !coord.equals(target)) {
+            return false;
+        }
+
         // Ensure the coordinate is not occupied by another player
         if (occupiedCells.contains(coord)) {
             return false;
