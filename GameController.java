@@ -191,8 +191,7 @@ public class GameController implements MouseListener, MouseMotionListener {
             if (visitedCellsThisTurn.contains(targetPosition)) {
                 view.logMessage("You can't backtrack!");
                 return;
-            }
-            
+            }            
     
             // Check if the clicked position is an estate
             if (board.isEstate(targetPosition)) {
@@ -200,6 +199,13 @@ public class GameController implements MouseListener, MouseMotionListener {
             } else {
                 // Proceed with the usual movement
                 Set<Coord> occupiedCells = getOccupiedCells();
+
+                // Check if targetPosition is occupied by another player
+                if (occupiedCells.contains(targetPosition)) {
+                    view.logMessage("Another player is there!");
+                    return;
+                }
+
                 List<Coord> shortestPath = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, targetPosition, occupiedCells, visitedCellsThisTurn);
     
                 if (shortestPath.size() - 1 <= remainingMoves && shortestPath.size() > 1) {
