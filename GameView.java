@@ -83,6 +83,10 @@ public class GameView extends JFrame {
         makeGuessButton.addActionListener(listener);
     }
 
+    public void addEndTurnButtonListener(ActionListener listener) {
+        endTurnButton.addActionListener(listener);
+    }
+
     public void addBoardMouseListener(MouseListener listener) {
         boardPanel.addMouseListener(listener);
     }

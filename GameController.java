@@ -64,6 +64,7 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     public void initListeners() {
         view.addRollDiceButtonListener(this::handleRollDiceButton);
+        view.addEndTurnButtonListener(this::endTurnPressed);
         view.addBoardMouseListener(this);
         view.addBoardMouseMotionListener(this);
     }
@@ -184,7 +185,7 @@ public class GameController implements MouseListener, MouseMotionListener {
                         board.setRemainingMoves(remainingMoves);
                         view.updateMovesRemainingLabel(remainingMoves);
                         if (remainingMoves == 0) {
-                            handleEndTurnButton();
+                            //handleEndTurnButton();
                         }
                     });
                 } else {
@@ -241,6 +242,10 @@ public class GameController implements MouseListener, MouseMotionListener {
     private void showCurrentPlayerCards() {
         Set<Card> cards = currentPlayer.getCards();
         view.updatePlayerCards(cards);
+    }
+
+    private void endTurnPressed(ActionEvent e){
+            handleEndTurnButton();
     }
 
     private void handleEndTurnButton() {
@@ -315,8 +320,11 @@ public class GameController implements MouseListener, MouseMotionListener {
             animationController.beginMoveAnimation(currentPlayer, pathToEntrance, 100, () -> {
                 // Once the player reaches the estate entrance, move them to a random unoccupied square inside the estate
                 moveToRandomPositionInsideEstate(estate);
+                remainingMoves -= pathToEntrance.size() - 1;
+                board.setRemainingMoves(remainingMoves);
+                view.updateMovesRemainingLabel(remainingMoves);
 
-                handleEndTurnButton();  // End the player's turn after entering the estate
+                //handleEndTurnButton();  // End the player's turn after entering the estate
             });
         } else {
             view.logMessage("Not enough moves to enter estate!");
