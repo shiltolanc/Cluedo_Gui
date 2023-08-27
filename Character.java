@@ -1,3 +1,5 @@
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.util.*;
 
 public class Character {
@@ -77,6 +79,10 @@ public class Character {
         return cards;
     }
 
+    public String toString(){
+        return getName().toString();
+    }
+
     /**
      * #######################################################################################################################
      *          TURN BASED SYSTEM - Below code used for Assignment 1 (Kept for reference, partially implemented)
@@ -153,6 +159,8 @@ public class Character {
      *        GUESS / REFUTE SYSTEM - Below code used for Assignment 1 (Kept for reference, requires implementation)
      * #######################################################################################################################
      */
+
+
     // /**
     //  * Asks the player to make a guess
     //  */
@@ -240,7 +248,7 @@ public class Character {
     //     for(Character c : chars){
     //          if (c.getName() == nextPlayerDirection) {
     //             if(found){
-    //                 System.out.println("\nHand the device to " + nextPlayerDirection 
+    //                 System.out.println("\nHand the device to " + nextPlayerDirection
     //                     + "\n. Confirm you have taken the device and type 'x': ");
 
     //                 String confirmation = new Scanner(System.in).nextLine().toLowerCase();
@@ -250,10 +258,10 @@ public class Character {
     //                     confirmation = new Scanner(System.in).nextLine().toLowerCase();
     //                 }
 
-    //                 System.out.println("\n" + charName 
+    //                 System.out.println("\n" + charName
     //                     + " has refuted using one of these cards \n" +
     //                     characterGuessed.getName() + "\n"+
-    //                     weaponGuessed + "\n" + 
+    //                     weaponGuessed + "\n" +
     //                     estateGuessed.getName() + "\n");
                     
 
@@ -269,7 +277,7 @@ public class Character {
     //             }
     //             else{
 
-    //                 System.out.println("\nIt's time for " + nextPlayerDirection 
+    //                 System.out.println("\nIt's time for " + nextPlayerDirection
     //                     + " to potentially refute the guess. \nConfirm you have taken the device and type 'x': ");
 
     //                 String confirmation = new Scanner(System.in).nextLine().toLowerCase();
@@ -301,7 +309,7 @@ public class Character {
     //                     charName = nextPlayerDirection.toString();
     //                     refute = matchingCards.get(revealedCardChoice - 1);
     //                 } else {
-    //                     System.out.println("\n" +  this.direction 
+    //                     System.out.println("\n" +  this.direction
     //                     + " has guessed: \n" + " - " +
     //                     characterGuessed.getName() + "\n" + " - " +
     //                     weaponGuessed + "\n" + " - " +
@@ -382,7 +390,7 @@ public class Character {
     //         }
     //     }
     //     return false;
-    // }
+//     }
 
     // Enums
     /**

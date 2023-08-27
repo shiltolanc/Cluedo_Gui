@@ -198,11 +198,7 @@ public class BoardRenderer {
         }
 
         // Draw weapons at specific coordinates
-        drawWeapon(g, "Broom", 5, 20, boardPanel);
-        drawWeapon(g, "Scissors", 18, 6, boardPanel);
-        drawWeapon(g, "Knife", 3, 3, boardPanel);
-        drawWeapon(g, "Shovel", 10, 10, boardPanel);
-        drawWeapon(g, "iPad", 20, 21, boardPanel);
+        updateWeapons(g, boardPanel);
 
         // Draw characters
         FontMetrics fm = g.getFontMetrics();
@@ -229,6 +225,12 @@ public class BoardRenderer {
             int centeredX = (int)(character.getAnimatedX() * cellSize) + (cellSize - textWidth) / 2;
             int centeredY = (int)(character.getAnimatedY() * cellSize) + (cellSize + textHeight) / 2;
             g.drawString(character.getInitial(), centeredX, centeredY);
+        }
+    }
+
+    public void updateWeapons(Graphics2D g, JPanel boardPanel){
+        for(Weapon w: board.getWeapons()){
+            drawWeapon(g, w.getName(), w.getX(), w.getY(), boardPanel);
         }
     }
 

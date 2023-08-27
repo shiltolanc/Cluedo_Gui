@@ -18,7 +18,14 @@ public class Board {
     private final Estate PP = new Estate(17, 17, 21, 21, "Peril Palace", ppEntrances);
     private final Estate VV = new Estate(9, 10, 14, 13, "Visitation Villa", vvEntrances);
 
-    private final List<String> Weapons = List.of("Broom", "Scissors", "Knife", "Shovel", "iPad");
+    //private final List<String> Weapons = List.of("Broom", "Scissors", "Knife", "Shovel", "iPad");
+    private final ArrayList<Weapon> Weapons = new ArrayList<>(List.of(
+            new Weapon(5,20,"Broom"),
+            new Weapon(18,6,"Scissors"),
+            new Weapon(3,3,"Knife"),
+            new Weapon(10,10,"Shovel"),
+            new Weapon(20,21,"Ipad")
+    ));
     private List<Character> characters = new ArrayList<>(List.of(
         new Character(11, 1, "L", Character.Direction.LUCILLA),
         new Character(1, 9, "B", Character.Direction.BERT),
@@ -67,7 +74,7 @@ public class Board {
         return characters;
     }
     
-    public List<String> getWeapons() {
+    public ArrayList<Weapon> getWeapons() {
         return Weapons;
     }
     
@@ -144,8 +151,8 @@ public class Board {
                 deck.add(new Card(e.getName(), Card.CardType.ESTATE));
             }
         }
-        for (String name : Weapons) {
-            deck.add(new Card(name, Card.CardType.WEAPON));
+        for (Weapon w : Weapons) {
+            deck.add(new Card(w.getName(), Card.CardType.WEAPON));
         }
         for (Character c : characters) {
             deck.add(new Card(c.getName().toString(), Card.CardType.CHARACTER));

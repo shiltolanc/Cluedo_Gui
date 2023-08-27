@@ -2,7 +2,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
+import javax.swing.*;
 import javax.swing.Timer;
+import java.awt.*;
 
 public class GameController implements MouseListener, MouseMotionListener {
     
@@ -333,7 +336,7 @@ public class GameController implements MouseListener, MouseMotionListener {
                 unoccupiedSquares.remove(new Coord(character.getX(), character.getY()));
             }
         }
-    
+
         if (!unoccupiedSquares.isEmpty()) {
             int randomIndex = new Random().nextInt(unoccupiedSquares.size());
             Coord randomSquare = unoccupiedSquares.get(randomIndex);
@@ -344,7 +347,7 @@ public class GameController implements MouseListener, MouseMotionListener {
             view.logMessage("No available space inside the estate!");
         }
     }
-    
+
     private void moveToEstate(Coord targetPosition) {
         Coord currentPlayerCoord = new Coord(currentPlayer.getX(), currentPlayer.getY());
         Estate estate = board.getEstateAt(targetPosition.getX(), targetPosition.getY());
@@ -363,17 +366,76 @@ public class GameController implements MouseListener, MouseMotionListener {
             animationController.beginMoveAnimation(currentPlayer, pathToEntrance, 100, () -> {
                 // Once the player reaches the estate entrance, move them to a random unoccupied square inside the estate
                 moveToRandomPositionInsideEstate(estate);
-                remainingMoves -= pathToEntrance.size() - 1;
+                //remainingMoves -= pathToEntrance.size() - 1;
+                remainingMoves = 0;
                 board.setRemainingMoves(remainingMoves);
                 view.updateMovesRemainingLabel(remainingMoves);
 
                 // Clear the visited cells since the player entered an estate
                 visitedCellsThisTurn.clear();
 
+                hypothesis();
+
                 //handleEndTurnButton();  // End the player's turn after entering the estate
             });
         } else {
             view.logMessage("Not enough moves to enter estate!");
+        }
+    }
+
+    private void hypothesis(){
+        JFrame jf = new JFrame();
+        jf.setAlwaysOnTop(true);
+
+        Character c = selectOption(board.getCharacters(),"Character!", "Select one to accuse:").get();
+        Weapon w = selectOption(board.getWeapons(),"Weapon!", "Select one to accuse:").get();
+        Estate e = board.getEstateAt(currentPlayer.getX(), currentPlayer.getY());
+
+        moveWeapon(e,w);
+        //move character as well
+
+        view.logMessage(currentPlayer + " has accused :\n" + c + "\n" + w + "\n" + e + "\n");
+
+
+
+    }
+
+    private void moveWeapon(Estate estate, Weapon w){
+        List<Coord> unoccupiedSquares = new ArrayList<>(estate.getUnoccupiedSquares());
+
+        // Remove entrances from the unoccupiedSquares list
+        unoccupiedSquares.removeAll(estate.getEntrances());
+
+        // Remove squares that are occupied by other players
+        for (Character character : board.getCharacters()) {
+            if (!character.equals(currentPlayer)) {
+                unoccupiedSquares.remove(new Coord(character.getX(), character.getY()));
+            }
+        }
+
+        if (!unoccupiedSquares.isEmpty()) {
+            int randomIndex = new Random().nextInt(unoccupiedSquares.size());
+            Coord randomSquare = unoccupiedSquares.get(randomIndex);
+            w.move(randomSquare.getX(), randomSquare.getY());
+            view.repaint();
+        } else {
+            view.logMessage("Failed to move weapon to estate");
+        }
+    }
+
+    public static <T> Optional<T> selectOption(List<T> options, String message, String title) {
+        JFrame jf = new JFrame();
+        jf.setAlwaysOnTop(true);
+
+        T[] optionsArray = options.toArray((T[]) new Object[0]);
+        int selection = JOptionPane.showOptionDialog(
+                jf, message, title, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+                optionsArray, optionsArray[0]);
+
+        if (selection >= 0 && selection < options.size()) {
+            return Optional.of(optionsArray[selection]);
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -395,4 +457,5 @@ public class GameController implements MouseListener, MouseMotionListener {
             return rand.nextInt(6) + 1 + rand.nextInt(6) + 1; // sum of two six-sided dice
         }        
     }
+
 }

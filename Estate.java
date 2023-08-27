@@ -13,6 +13,7 @@ public class Estate {
     private String name;
     private List<Coord> entrances;
     private List<Character> chars = new ArrayList<>();
+    private List<Character> weapons = new ArrayList<>();
 
     // Constructor
     public Estate(int x, int y, int x2, int y2, String name, List<Coord> entrances) {
@@ -49,9 +50,13 @@ public class Estate {
         return entrances;
     }
 
-    // public List<Character> getChars() {
-    //     return chars;
-    // }
+    public String toString() {
+        return this.name;
+    }
+
+//     public List<Character> getChars() {
+//         return chars;
+//     }
 
     // public void addChars(Character character) {
     //     chars.add(character);

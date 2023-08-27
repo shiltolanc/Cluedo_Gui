@@ -72,6 +72,7 @@ public class GameView extends JFrame {
         return boardPanel.getSize();
     }
 
+
     public void logMessage(String msg) {
         logs.append(msg + "\n");
     }
