@@ -9,7 +9,7 @@ public class Initialiser {
     Initialiser() {
         Scanner sc;
         System.out.println("Type below how many players are playing (Choose between 3 or 4): ");
-        while(true) {
+        while (true) {
             sc = new Scanner(System.in);
             if (sc.hasNextInt()) {
                 playerCount = sc.nextInt();
@@ -23,9 +23,12 @@ public class Initialiser {
 
     /**
      * Getter method
+     *
      * @return The playerCount
      */
-    public int getPlayerCount() { return playerCount; }
+    public int getPlayerCount() {
+        return playerCount;
+    }
 
     /**
      * Setup GUI for game start

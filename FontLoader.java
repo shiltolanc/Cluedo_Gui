@@ -10,11 +10,11 @@ public class FontLoader {
         try {
             InputStream is = FontLoader.class.getResourceAsStream(path);
             Font font = Font.createFont(Font.TRUETYPE_FONT, is);
-            
+
             // Register the font
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(font);
-            
+
             return font;
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();

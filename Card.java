@@ -7,7 +7,7 @@ public class Card {
     private CardType type;
 
     // Enums
-    public enum CardType { WEAPON, CHARACTER, ESTATE }
+    public enum CardType {WEAPON, CHARACTER, ESTATE}
 
     // Constructor
     public Card(String name, CardType type) {
@@ -16,6 +16,7 @@ public class Card {
     }
 
     // Public methods
+
     /**
      * Retrieves the name of the card.
      */
@@ -45,7 +46,7 @@ public class Card {
         }
         Card card = (Card) o;
         return Objects.equals(name, card.name) &&
-               type == card.type;
+                type == card.type;
     }
 
     @Override

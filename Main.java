@@ -8,10 +8,10 @@ public class Main {
 
     // Main method
     public static void main(String[] args) {
-        
+
         board.determineCharacters();
         Initialiser.setup();
-    
+
         GameController controller = new GameController(board);
         GameView view = new GameView(board, controller);
         controller.setView(view);
