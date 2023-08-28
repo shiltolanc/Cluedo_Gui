@@ -45,6 +45,7 @@ public class Board {
     private List<Coord> invalidHighlightedCells;
     private ArrayList<String> list = new ArrayList<String>();
     private ArrayList<Character> chars = new ArrayList<Character>();
+    int playerCount;
 
     // Constructor
     public Board() {
@@ -54,7 +55,8 @@ public class Board {
 
         populateDeck();
         setMurderCards();
-        distributeCards();
+        playerCount = Main.UI.getPlayerCount();
+        
         // displayCards();
     }
 
@@ -137,8 +139,6 @@ public class Board {
     }
 
     public void takeList(ArrayList<String> names) {
-        System.out.println(names.get(0));
-        System.out.println("took the list");
         for(String name : names) {
           Character character = getCharacterByName(name);
           if(character != null) {
@@ -146,6 +146,7 @@ public class Board {
           }
         }
         shuffleCharacters(chars);
+        distributeCards();
       }
 
     // Private methods
@@ -195,7 +196,6 @@ public class Board {
     }
 
     private void distributeCards() {
-        int playerCount = Main.UI.getPlayerCount();
         if (playerCount < 3 || playerCount > 4) {
             throw new IllegalArgumentException("The number of characters must be between 3 and 4.");
         }
@@ -207,6 +207,7 @@ public class Board {
     }
 
     private void distributeCardsToPlayers(int numCardsPerPlayer, int remainingCards) {
+        System.out.println(characters.size());
         int cardIndex = 0;
         while (cardIndex < deck.size()) {
             int numCardsToDeal = numCardsPerPlayer + (remainingCards > 0 ? 1 : 0);

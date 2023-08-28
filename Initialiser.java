@@ -6,6 +6,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 import javax.swing.JLabel;
 
 import java.awt.Color;
@@ -14,6 +15,8 @@ import java.awt.event.*;
 public class Initialiser implements ActionListener{
     private int playerCount = 0;
     JRadioButton a,b,c,d;
+    
+    JFrame playerSelect = new JFrame("player select");
     private static ArrayList<String> list = new ArrayList<String>();
     JLabel l;
 
@@ -62,6 +65,14 @@ public class Initialiser implements ActionListener{
             }
             if(list.size()!=4)
             l.setText("Player " + (list.size() + 1) + " please select your character:");
+
+            if(list.size()>= 3){
+                JButton thing2 = new JButton("Start Game");
+                thing2.setBounds(40, 320 , 150 , 50);
+                thing2.addActionListener(this);
+                playerSelect.add(thing2);
+                SwingUtilities.updateComponentTreeUI(playerSelect);
+            }
         }
         if(e.getActionCommand().equals("Start Game")){
             
@@ -72,6 +83,7 @@ public class Initialiser implements ActionListener{
             if(list.size()==4){
                 playerCount = 4;
             }
+            System.out.println(playerCount);
 
             
         }
@@ -85,7 +97,7 @@ public class Initialiser implements ActionListener{
      */
     public int getPlayerCount() {
         if(playerCount == 0){
-            JFrame playerSelect = new JFrame("player select");
+            
             a = new JRadioButton("Lucilla");
             b = new JRadioButton("Bert");
             c = new JRadioButton("Malina");
@@ -104,13 +116,13 @@ public class Initialiser implements ActionListener{
             playerSelect.add(c);
             playerSelect.add(d);
             JButton thing = new JButton("Select");
-            JButton thing2 = new JButton("Start Game");
+            
             thing.setBounds(40, 250 , 150 , 50);
-            thing2.setBounds(40, 320 , 150 , 50);
+            
             thing.addActionListener(this);
-            thing2.addActionListener(this);
+            
             playerSelect.add(thing);
-            playerSelect.add(thing2);
+            
             l = new JLabel("Player 1 please select your character:");
             l.setBounds(10, -70, 300, 200);
             playerSelect.add(l);
