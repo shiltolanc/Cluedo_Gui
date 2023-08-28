@@ -200,6 +200,12 @@ public class Board {
         int remainingCards = deck.size() % playerCount;
 
         distributeCardsToPlayers(numCardsPerPlayer, remainingCards);
+
+            System.out.println("Murder Cards");
+            for(Card card: getMurderCards()){
+                System.out.println(card.toString());
+            }
+
     }
 
     private void distributeCardsToPlayers(int numCardsPerPlayer, int remainingCards) {

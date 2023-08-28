@@ -383,9 +383,10 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
     }
 
+    /**
+     * Allows the current player to make a guess
+     */
     private void hypothesis(){
-        JFrame jf = new JFrame();
-        jf.setAlwaysOnTop(true);
 
         Character c = selectOption(board.getCharacters(),"Character!", "Select one to accuse:").get();
         Weapon w = selectOption(board.getWeapons(),"Weapon!", "Select one to accuse:").get();
@@ -396,10 +397,93 @@ public class GameController implements MouseListener, MouseMotionListener {
 
         view.logMessage(currentPlayer + " has accused :\n" + c + "\n" + w + "\n" + e + "\n");
 
-
+        //refute the guess
+        refuteCards(c,w,e);
 
     }
 
+    /**
+     * Goes through each player and attempts to refute a card if they have them
+     * @param c
+     * @param w
+     * @param e
+     */
+    private Boolean refuteCards(Character c, Weapon w, Estate e){
+        ArrayList<Character> characters = new ArrayList<>(board.getCharacters());
+        ArrayList<Card> refuteCards = new ArrayList<>();
+        Card refuteCard;
+        characters.remove(currentPlayer);
+
+        for(Character character: characters){
+            selectOption(List.of("Ok"), "Pass the tablet to " + character.getName() + " before pressing 'Ok'","Refute Guess");
+
+            refuteCards.clear();
+            refuteCards.addAll(character.getCards().stream()
+                    .filter(card -> card.getName().equals(c.toString())
+                            || card.getName().equals(w.getName())
+                            || card.getName().equals(e.getName()))
+                    .toList()
+            );
+
+            if(!refuteCards.isEmpty()){
+                refuteCard = selectOption(refuteCards,"Select a card to refute the guess:", c.getName() + "'s turn").get();
+                selectOption(List.of("Ok"), "Pass the tablet back to " + currentPlayer.getName() + " before pressing 'Ok'","Refuted");
+                selectOption(List.of("Ok"), character.getName() + " has refuted the guess with " + refuteCard,"Refuted");
+                return true;
+            } else {
+                selectOption(List.of("Ok"), "You do not have a card to refute the guess","Refute Guess");
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Final accusation
+     */
+    private void accusation(){
+        boolean refuted = false;
+        String con = selectOption(List.of("Yes","No"), "You are about to make a final accusation are you sure you want to continue?","Accusation").get();
+        if(con.equals("No")){ return; }
+
+        Character c = selectOption(board.getCharacters(),"Character!", "Select one to accuse:").get();
+        Weapon w = selectOption(board.getWeapons(),"Weapon!", "Select one to accuse:").get();
+        Estate e = board.getEstateAt(currentPlayer.getX(), currentPlayer.getY());
+
+        view.logMessage(currentPlayer + " has accused :\n" + c + "\n" + w + "\n" + e + "\n");
+
+        for(Card card: board.getMurderCards()){
+            if(card.getType() == Card.CardType.CHARACTER){
+                if(card.toString().equals(c.toString())){
+                    refuted = true;
+                }
+            } else if(card.getType() == Card.CardType.WEAPON){
+                if(card.toString().equals(w.toString())){
+                    refuted = true;
+                }
+            } else if(card.getType() == Card.CardType.ESTATE){
+                if(card.toString().equals(e.toString())){
+                    refuted = true;
+                }
+            }
+        }
+
+        if(refuted){
+            selectOption(List.of("Ok"), "Your accusation has been refuted ensure that only you can view the screen","Accusation");
+            StringBuilder sb = new StringBuilder("Murder Cards: \n");
+            for(Card card: board.getMurderCards()){
+                sb.append(card + "\n");
+            }
+            selectOption(List.of("Ok"), sb.toString(), "Murder Cards");
+
+            //stop the character from being played
+        } else {
+            //you win
+            System.out.println("piss");
+        }
+
+    }
+
+    //this is a duplicate of 'moveToRandomPositionInsideEstate' that moves a weapon instead of character
     private void moveWeapon(Estate estate, Weapon w){
         List<Coord> unoccupiedSquares = new ArrayList<>(estate.getUnoccupiedSquares());
 
