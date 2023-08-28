@@ -4,6 +4,7 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 public class GameView extends JFrame {
@@ -104,26 +105,15 @@ public class GameView extends JFrame {
         //JMenuItem resetItem = new JMenuItem("Reset");
         JMenuItem exitItem = new JMenuItem("Exit");
 
-        /*
-        resetItem.addActionListener(e -> {
-            JOptionPane.showMessageDialog(GameView.this, "Resetting game...");
-            GameController.RestartApplication();
-        });
-        */
-
         exitItem.addActionListener(e -> System.exit(0));
 
         // Set fonts
         Font menuFont = new Font("Arial", Font.PLAIN, 24);
         Font menuItemFont = new Font("Arial", Font.PLAIN, 18);
-
         optionMenu.setFont(menuFont);
-        //resetItem.setFont(menuItemFont);
         exitItem.setFont(menuItemFont);
 
-        // Add items to menu with a separator between them
-        //optionMenu.add(resetItem);
-        //optionMenu.addSeparator();
+        // Add exit item to menu
         optionMenu.add(exitItem);
 
         // Add menu to menu bar
@@ -322,14 +312,17 @@ public class GameView extends JFrame {
         JMenuItem normalGuess = new JMenuItem("Guess");
         JMenuItem finalGuess = new JMenuItem("Final Guess");
 
-        // Trigger normal guess
-        normalGuess.addActionListener(e ->
-        this.gameController.hypothesis());
+        if (GameController.inEstate()) {
+            // Trigger normal guess
+            normalGuess.addActionListener(e -> this.gameController.hypothesis());
 
-
-        // Trigger final guess, will either win or lose
-        finalGuess.addActionListener(e ->
-                this.gameController.accusation());
+            // Trigger final guess, will either win or lose
+            finalGuess.addActionListener(e -> this.gameController.accusation());
+        } else {
+            GameController.selectOption(List.of("Ok"),
+                    "You are not currently inside of an estate!",
+                    "Error");
+        }
 
         popupMenu.add(normalGuess);
         popupMenu.add(finalGuess);

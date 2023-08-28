@@ -11,9 +11,9 @@ import java.awt.*;
 public class GameController implements MouseListener, MouseMotionListener {
 
     // Member variables
-    private Board board;
+    private static Board board;
     private GameView view;
-    private Character currentPlayer;
+    private static Character currentPlayer;
     private int currentRoll;
     private boolean rollCompleted;
     private int currentTurn = 0;
@@ -30,13 +30,17 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     // Constructor
     public GameController(Board board) {
-        this.board = board;
+        GameController.board = board;
 
         currentPlayer = board.getCharacters().get(0); // Initialize the currentPlayer
         initAnimationController();
     }
 
     // Public methods
+    public static boolean inEstate() {
+        return board.isEstate(currentPlayer.getCoord());
+    }
+
     public List<Estate> getUnreachableEstates() {
         return new ArrayList<>(unreachableEstates);
     }
