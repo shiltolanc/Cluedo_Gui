@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -8,7 +9,7 @@ import javax.swing.Timer;
 import java.awt.*;
 
 public class GameController implements MouseListener, MouseMotionListener {
-    
+
     // Member variables
     private Board board;
     private GameView view;
@@ -30,16 +31,16 @@ public class GameController implements MouseListener, MouseMotionListener {
     // Constructor
     public GameController(Board board) {
         this.board = board;
-        
+
         currentPlayer = board.getCharacters().get(0); // Initialize the currentPlayer
         initAnimationController();
     }
-    
+
     // Public methods
     public List<Estate> getUnreachableEstates() {
         return new ArrayList<>(unreachableEstates);
     }
-    
+
     public Estate getHoverableEstate() {
         return hoverableEstate;
     }
@@ -57,7 +58,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     }
 
     public Color determinePlayerColor(char initial) {
-        switch(initial) {
+        switch (initial) {
             case 'L':
                 return Color.GREEN;
             case 'B':
@@ -69,11 +70,12 @@ public class GameController implements MouseListener, MouseMotionListener {
             default:
                 return Color.BLACK;
         }
-    }    
+    }
 
     public void initListeners() {
         view.addRollDiceButtonListener(this::handleRollDiceButton);
         view.addEndTurnButtonListener(this::endTurnPressed);
+        view.addGuessOptionButtonListener(this::guessOptionsPressed);
         view.addBoardMouseListener(this);
         view.addBoardMouseMotionListener(this);
     }
@@ -89,8 +91,8 @@ public class GameController implements MouseListener, MouseMotionListener {
     }
 
     @Override
-    public void mousePressed(MouseEvent e){
-       handleMouseAction(e);
+    public void mousePressed(MouseEvent e) {
+        handleMouseAction(e);
     }
 
     @Override
@@ -117,7 +119,7 @@ public class GameController implements MouseListener, MouseMotionListener {
 
             Coord currentPlayerPosition = new Coord(currentPlayer.getX(), currentPlayer.getY());
             Coord targetPosition = new Coord(x, y);
-            
+
             // Check if hovered cell is in visitedCellsThisTurn
             if (visitedCellsThisTurn.contains(targetPosition)) {
                 board.clearHighlightedCells();
@@ -134,7 +136,7 @@ public class GameController implements MouseListener, MouseMotionListener {
                 currentPlayer.setX(closestEntrance.getX());
                 currentPlayer.setY(closestEntrance.getY());
 
-                currentPlayerPosition = closestEntrance; 
+                currentPlayerPosition = closestEntrance;
             }
 
             if (hoveredEstate != null && !(hoveredEstate instanceof GreyArea)) {
@@ -147,7 +149,7 @@ public class GameController implements MouseListener, MouseMotionListener {
             if (hoveredEstate != null && !(hoveredEstate instanceof GreyArea)) {
                 Coord closestEntrance = findClosestEntrance(currentPlayerPosition, hoveredEstate.getEntrances());
                 List<Coord> pathToClosestEntrance = DijkstraShortestPath.minimumDistance(board, currentPlayerPosition, closestEntrance, getOccupiedCells(), visitedCellsThisTurn);
-        
+
                 if (pathToClosestEntrance.size() - 1 <= remainingMoves) {
                     hoverableEntrances.add(closestEntrance);
                     hoverableEstate = hoveredEstate;  // Set the hoverable estate
@@ -156,7 +158,7 @@ public class GameController implements MouseListener, MouseMotionListener {
                     unreachableEstates.add(hoveredEstate); // Add the hovered estate to unreachable since it's not reachable
                 }
             }
-        
+
             if (shortestPath.size() <= remainingMoves) {
                 board.highlightCells(shortestPath, remainingMoves);
             } else {
@@ -178,10 +180,10 @@ public class GameController implements MouseListener, MouseMotionListener {
         if (rollCompleted && !animationController.isAnimating()) {
             Dimension boardPanelSize = view.getBoardPanelSize();
             int cellSize = Math.min(boardPanelSize.width / board.getBoardWidth(), boardPanelSize.height / board.getBoardHeight());
-    
+
             int x = e.getX() / cellSize;
             int y = e.getY() / cellSize;
-    
+
             Coord currentPlayerPosition = new Coord(currentPlayer.getX(), currentPlayer.getY());
             Coord targetPosition = new Coord(x, y);
 
@@ -236,14 +238,14 @@ public class GameController implements MouseListener, MouseMotionListener {
             view.logMessage("You need to roll first!");
         }
     }
-    
+
     private void handleRollDiceButton(ActionEvent e) {
         if (!rollCompleted) {
             diceRollCounter = 0;
 
             // Disable rollDiceButton
             view.setRollDiceButtonEnabled(false);
-    
+
             // Create a timer that updates the diceRollLabel rapidly
             diceRollTimer = new Timer(35, new ActionListener() {
                 @Override
@@ -251,7 +253,7 @@ public class GameController implements MouseListener, MouseMotionListener {
                     int tempRoll = new Random().nextInt(6) + 1;
                     view.updateDiceRollLabel(tempRoll);
                     diceRollCounter++;
-    
+
                     // Stop the timer after 10 iterations and show the final dice roll
                     if (diceRollCounter > 10) {
                         diceRollTimer.stop();
@@ -265,7 +267,7 @@ public class GameController implements MouseListener, MouseMotionListener {
                     }
                 }
             });
-    
+
             diceRollTimer.start();
         }
     }
@@ -279,8 +281,8 @@ public class GameController implements MouseListener, MouseMotionListener {
         view.updatePlayerCards(cards);
     }
 
-    private void endTurnPressed(ActionEvent e){
-            handleEndTurnButton();
+    private void endTurnPressed(ActionEvent e) {
+        handleEndTurnButton();
     }
 
     private void handleEndTurnButton() {
@@ -307,11 +309,17 @@ public class GameController implements MouseListener, MouseMotionListener {
         view.repaint();
     }
 
+    private void guessOptionsPressed(ActionEvent e) { handleGuessOptionButton(); }
+
+    private void handleGuessOptionButton() {
+        view.createGuessMenu(view.getGuessOptionButton());
+    }
+
     private Coord findClosestEntrance(Coord destination, List<Coord> entrances) {
         if (entrances == null || entrances.isEmpty()) {
             return null;
         }
-    
+
         Coord closest = null;
         double minDistance = Double.MAX_VALUE;
         for (Coord entrance : entrances) {
@@ -323,13 +331,13 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
         return closest;
     }
-    
+
     private void moveToRandomPositionInsideEstate(Estate estate) {
         List<Coord> unoccupiedSquares = new ArrayList<>(estate.getUnoccupiedSquares());
-        
+
         // Remove entrances from the unoccupiedSquares list
         unoccupiedSquares.removeAll(estate.getEntrances());
-    
+
         // Remove squares that are occupied by other players
         for (Character character : board.getCharacters()) {
             if (!character.equals(currentPlayer)) {
@@ -361,7 +369,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         // Choose the closest entrance to the player's current position
         Coord entrance = findClosestEntrance(currentPlayerCoord, entrances);
         List<Coord> pathToEntrance = DijkstraShortestPath.minimumDistance(board, currentPlayerCoord, entrance, getOccupiedCells(), visitedCellsThisTurn);
-    
+
         if (pathToEntrance.size() - 1 <= remainingMoves) {
             animationController.beginMoveAnimation(currentPlayer, pathToEntrance, 100, () -> {
                 // Once the player reaches the estate entrance, move them to a random unoccupied square inside the estate
@@ -374,7 +382,6 @@ public class GameController implements MouseListener, MouseMotionListener {
                 // Clear the visited cells since the player entered an estate
                 visitedCellsThisTurn.clear();
 
-                hypothesis();
 
                 //handleEndTurnButton();  // End the player's turn after entering the estate
             });
@@ -386,7 +393,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     /**
      * Allows the current player to make a guess
      */
-    private void hypothesis(){
+    public void hypothesis(){
 
         Character c = selectOption(board.getCharacters(),"Character!", "Select one to accuse:").get();
         Weapon w = selectOption(board.getWeapons(),"Weapon!", "Select one to accuse:").get();
@@ -440,7 +447,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     /**
      * Final accusation
      */
-    private void accusation(){
+    public void accusation(){
         boolean refuted = false;
         String con = selectOption(List.of("Yes","No"), "You are about to make a final accusation are you sure you want to continue?","Accusation").get();
         if(con.equals("No")){ return; }

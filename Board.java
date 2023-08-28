@@ -5,13 +5,13 @@ public class Board {
     // Member variables
     private final int boardHeight = 24;
     private final int boardWidth = 24;
-    
+
     private final List<Coord> hhEntrances = List.of(new Coord(5, 6), new Coord(6, 3));
     private final List<Coord> mmEntrances = List.of(new Coord(17, 5), new Coord(20, 6));
     private final List<Coord> ccEntrances = List.of(new Coord(3, 17), new Coord(6, 18));
     private final List<Coord> ppEntrances = List.of(new Coord(18, 17), new Coord(17, 20));
     private final List<Coord> vvEntrances = List.of(new Coord(9, 12), new Coord(12, 10), new Coord(14, 11), new Coord(11, 13));
-    
+
     private final Estate HH = new Estate(2, 2, 6, 6, "Haunted House", hhEntrances);
     private final Estate MM = new Estate(17, 2, 21, 6, "Manic Manor", mmEntrances);
     private final Estate CC = new Estate(2, 17, 6, 21, "Calamity Castle", ccEntrances);
@@ -32,7 +32,7 @@ public class Board {
         new Character(9, 22, "M", Character.Direction.MALINA),
         new Character(22, 14, "P", Character.Direction.PERCY)
     ));
-    
+
     private final ArrayList<Estate> estates = new ArrayList<>(List.of(HH, MM, CC, PP, VV,
         new GreyArea(5, 11, 6, 12, "GREY AREA"), 
         new GreyArea(17, 11, 18, 12, "GREY AREA"),
@@ -41,9 +41,11 @@ public class Board {
     ));
     private final ArrayList<Card> deck = new ArrayList<>();
     private final Set<Card> murderCards = new HashSet<>();
-    
+
     private List<Coord> validHighlightedCells;
     private List<Coord> invalidHighlightedCells;
+    private ArrayList<Character> chars = new ArrayList<Character>();
+    int playerCount;
 
     // Constructor
     public Board() {
@@ -53,7 +55,8 @@ public class Board {
 
         populateDeck();
         setMurderCards();
-        distributeCards();
+        playerCount = Main.UI.getPlayerCount();
+
         // displayCards();
     }
 
@@ -61,11 +64,11 @@ public class Board {
     public int getBoardHeight() {
         return boardHeight;
     }
-    
+
     public int getBoardWidth() {
         return boardWidth;
     }
-    
+
     public List<Estate> getEstates() {
         return Collections.unmodifiableList(estates);
     }
@@ -77,7 +80,7 @@ public class Board {
     public ArrayList<Weapon> getWeapons() {
         return Weapons;
     }
-    
+
     public Set<Card> getMurderCards() {
         return murderCards;
     }
@@ -101,11 +104,11 @@ public class Board {
         Estate estate = getEstateAt(coord.getX(), coord.getY());
         return estate != null;
     }
-    
-    public void highlightCells(List<Coord> shortestPath, int remainingMoves){
+
+    public void highlightCells(List<Coord> shortestPath, int remainingMoves) {
         validHighlightedCells.clear();
         invalidHighlightedCells.clear();
-    
+
         for (int i = 1; i < shortestPath.size(); i++) {
             if (i <= remainingMoves) {
                 validHighlightedCells.add(shortestPath.get(i));
@@ -130,19 +133,17 @@ public class Board {
         invalidHighlightedCells.clear();    
     }
 
-    public void determineCharacters() {
-        int playerCount = Main.UI.getPlayerCount();
-        switch (playerCount) {
-            case 3:
-                shuffleCharacters(List.of(getCharacterByName("LUCILLA"), getCharacterByName("BERT"), getCharacterByName("MALINA")));
-                break;
-            case 4:
-                shuffleCharacters(characters);
-                break;
-            default:
-                throw new IllegalArgumentException("Case exception: player count is " + playerCount);
+
+    public void takeList(ArrayList<String> names) {
+        for(String name : names) {
+          Character character = getCharacterByName(name);
+          if(character != null) {
+            chars.add(character);
+          }
         }
-    }
+        shuffleCharacters(chars);
+        distributeCards();
+      }
 
     // Private methods
     private void populateDeck() {
@@ -157,7 +158,7 @@ public class Board {
         for (Character c : characters) {
             deck.add(new Card(c.getName().toString(), Card.CardType.CHARACTER));
         }
-    }    
+    }
 
     private Character getCharacterByName(String name) {
         return characters.stream()
@@ -171,7 +172,7 @@ public class Board {
         Collections.shuffle(mutableChars);
         characters = mutableChars;
     }
-    
+
     private void setMurderCards() {
         Collections.shuffle(deck);
         murderCards.add(pickCardOfType(Card.CardType.WEAPON));
@@ -200,12 +201,6 @@ public class Board {
         int remainingCards = deck.size() % playerCount;
 
         distributeCardsToPlayers(numCardsPerPlayer, remainingCards);
-
-            System.out.println("Murder Cards");
-            for(Card card: getMurderCards()){
-                System.out.println(card.toString());
-            }
-
     }
 
     private void distributeCardsToPlayers(int numCardsPerPlayer, int remainingCards) {

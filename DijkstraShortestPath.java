@@ -1,6 +1,6 @@
 import java.util.*;
 
-/* 
+/*
  * This class is used to find the shortest path between two coordinates on the board.
  * It uses Dijkstra's algorithm to calculate this.
  */
@@ -85,10 +85,10 @@ public class DijkstraShortestPath {
         List<Coord> neighbors = new ArrayList<>();
 
         int[][] offsets = {
-            {0, -1},
-            {1, 0},
-            {0, 1},
-            {-1, 0}
+                {0, -1},
+                {1, 0},
+                {0, 1},
+                {-1, 0}
         };
 
         for (int[] offset : offsets) {
@@ -96,7 +96,7 @@ public class DijkstraShortestPath {
             if (isValid(board, neighbor, occupiedCells, target, visitedCellsThisTurn)) {
                 neighbors.add(neighbor);
             }
-        }        
+        }
         return neighbors;
     }
 
@@ -108,7 +108,7 @@ public class DijkstraShortestPath {
         if (coord.getX() < 0 || coord.getX() >= board.getBoardWidth() || coord.getY() < 0 || coord.getY() >= board.getBoardHeight()) {
             return false;
         }
-    
+
         // Check if the cell has been visited during this turn
         if (visitedCellsThisTurn.contains(coord) && !coord.equals(target)) {
             return false;
@@ -118,13 +118,13 @@ public class DijkstraShortestPath {
         if (occupiedCells.contains(coord)) {
             return false;
         }
-    
+
         // If the target is inside an estate, allow movement inside the estate
         Estate targetEstate = board.getEstateAt(target.getX(), target.getY());
         if (targetEstate != null && targetEstate.isInside(coord)) {
             return true;  // If the target is inside an estate, and the current coord is inside the same estate, it's valid.
         }
-    
+
         // Otherwise, ensure the coordinate is not inside an estate that is not an entrance
         Estate estate = board.getEstateAt(coord.getX(), coord.getY());
         if (estate != null) {

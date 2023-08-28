@@ -6,12 +6,11 @@ public class Main {
     public static boolean isGameOn = true;
     public static int falseAccusationCount = 0;
 
+
     // Main method
     public static void main(String[] args) {
-        
-        board.determineCharacters();
+        //board.determineCharacters();
         Initialiser.setup();
-
         GameController controller = new GameController(board);
         GameView view = new GameView(board, controller);
         controller.setView(view);
@@ -23,6 +22,6 @@ public class Main {
         //         if (!Main.isGameOn) break;
         //     }
         // }
-        // System.out.println("Game over, please close the window.");
+        // System.out.println("Game over, please close the window.");$
     }
 }

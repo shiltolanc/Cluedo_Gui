@@ -73,7 +73,7 @@ public class BoardRenderer {
 
         // Draw estates and grey areas
         for (Estate estate : board.getEstates()) {
-            int thickness = 3;  // Line thickness
+            int thickness = 3;
             g.setStroke(new BasicStroke(thickness));
 
             if (!(estate instanceof GreyArea)) {
@@ -86,33 +86,9 @@ public class BoardRenderer {
                 g.fillRect(estate.getX() * cellSize, estate.getY() * cellSize, (estate.getX2() - estate.getX() + 1) * cellSize, (estate.getY2() - estate.getY() + 1) * cellSize);
             }
         }
-        // // Draw the estates with colors
-        // for (Estate estate : board.getEstates()) {
-        //     switch (estate.getName()) {
-        //         case "Haunted House":
-        //             g.setColor(new Color(205, 92, 92, 150));  // Light Coral
-        //             break;
-        //         case "Manic Manor":
-        //             g.setColor(new Color(85, 107, 47, 150));  // Dark Olive Green
-        //             break;
-        //         case "Calamity Castle":
-        //             g.setColor(new Color(70, 130, 180, 150));  // Steel Blue
-        //             break;
-        //         case "Peril Palace":
-        //             g.setColor(new Color(139, 69, 19, 150));  // Saddle Brown
-        //             break;
-        //         case "Visitation Villa":
-        //             g.setColor(new Color(255, 140, 0, 150));  // Dark Orange
-        //             break;
-        //         default:
-        //             g.setColor(Color.LIGHT_GRAY);
-        //             break;
-        //     }
-        //     g.fillRect(estate.getX() * cellSize + 2, estate.getY() * cellSize + 2, (estate.getX2() - estate.getX() + 1) * cellSize - 3, (estate.getY2() - estate.getY() + 1) * cellSize - 3);
-        // }
 
         // Draw estate entrances
-        int thickness = 3;  // Line thickness
+        int thickness = 3;
         g.setStroke(new BasicStroke(thickness));
 
         List<Coord> redEntrances = gameController.getUnreachableEntrances();
@@ -125,7 +101,7 @@ public class BoardRenderer {
                 for (Coord entrance : estate.getEntrances()) {
                     int rectX = entrance.getX() * cellSize;
                     int rectY = entrance.getY() * cellSize;
-            
+
                     // Check if the entrance is the closest one
                     if (redEntrances.contains(entrance) || greenEntrances.contains(entrance)) {
                         if (redEntrances.contains(entrance)) {
@@ -166,9 +142,9 @@ public class BoardRenderer {
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(1));
 
-        // Print names on each estate
-        Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f); // Dynamically adjust font size based on cell size
-        
+        // Print names on each estate and dynamically adjust font size based on cell size
+        Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f);
+
         g.setFont(boardFont);
         g.setColor(Color.BLACK);
 
@@ -176,21 +152,21 @@ public class BoardRenderer {
             if (!(estate instanceof GreyArea)) {
                 // Convert estate name to uppercase and split by spaces
                 String[] nameParts = estate.getName().toUpperCase().split(" ");
-                
+
                 // Calculate total height of all lines combined
                 int totalHeight = nameParts.length * cellSize / 2;
-        
+
                 // Calculate the starting y coordinate
                 int offsetY = cellSize / 2;
                 int nameY = estate.getY() * cellSize + (estate.getY2() - estate.getY() + 1) * cellSize / 2 - totalHeight / 2 + offsetY;
-        
+
                 for (String part : nameParts) {
                     // Calculate width of the text
                     int textWidth = g.getFontMetrics().stringWidth(part);
-                    
+
                     // Calculate the x coordinate to center the text
                     int nameX = estate.getX() * cellSize + (estate.getX2() - estate.getX() + 1) * cellSize / 2 - textWidth / 2;
-        
+
                     g.drawString(part, nameX, nameY);
                     nameY += cellSize / 2; // Move to the next line
                 }
@@ -203,7 +179,7 @@ public class BoardRenderer {
         // Draw characters
         FontMetrics fm = g.getFontMetrics();
         for (Character character : board.getCharacters()) {
-            switch(character.getInitial()) {
+            switch (character.getInitial()) {
                 case "L":
                     g.setColor(Color.GREEN);
                     break;
@@ -218,12 +194,18 @@ public class BoardRenderer {
                     break;
             }
             g.fillOval((int)(character.getAnimatedX() * cellSize) + 2,  (int)(character.getAnimatedY() * cellSize) + 2, cellSize - 3, cellSize - 3);
-            g.setColor(Color.BLACK);
+
+            // Set text color based on the character for easier reading
+            if ("M".equals(character.getInitial()) || "P".equals(character.getInitial())) {
+                g.setColor(Color.WHITE);
+            } else {
+                g.setColor(Color.BLACK);
+            }
             
             int textWidth = fm.stringWidth(character.getInitial());
             int textHeight = fm.getAscent();
-            int centeredX = (int)(character.getAnimatedX() * cellSize) + (cellSize - textWidth) / 2;
-            int centeredY = (int)(character.getAnimatedY() * cellSize) + (cellSize + textHeight) / 2;
+            int centeredX = (int) (character.getAnimatedX() * cellSize) + (cellSize - textWidth) / 2;
+            int centeredY = (int) (character.getAnimatedY() * cellSize) + (cellSize + textHeight) / 2;
             g.drawString(character.getInitial(), centeredX, centeredY);
         }
     }

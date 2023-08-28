@@ -28,7 +28,7 @@ public class Character {
     public int getX() {
         return this.x;
     }
-    
+
     public int getY() {
         return this.y;
     }
@@ -37,13 +37,13 @@ public class Character {
         return new Coord(x, y);
     }
 
-    public void setX(int x) { 
-        this.x = x; 
+    public void setX(int x) {
+        this.x = x;
         this.animatedX = x;
     }
 
-    public void setY(int y) { 
-        this.y = y; 
+    public void setY(int y) {
+        this.y = y;
         this.animatedY = y;
     }
 
@@ -62,20 +62,20 @@ public class Character {
     public double getAnimatedY() {
         return animatedY;
     }
-    
-    public String getInitial() { 
+
+    public String getInitial() {
         return initial;
     }
 
-    public Direction getName(){
+    public Direction getName() {
         return this.direction;
     }
 
-    public void addCards(Card c){
+    public void addCards(Card c) {
         cards.add(c);
     }
 
-    public Set<Card> getCards(){
+    public Set<Card> getCards() {
         return cards;
     }
 
@@ -109,7 +109,7 @@ public class Character {
     //             System.out.println(c.toString());
     //         }
     //         System.out.println("\n" + this.getName() + " rolled " + moves + "!");
-            
+
     //         // Check if the character can make a guess
     //         if (this.inEstate && !(this.e instanceof GreyArea)) {
     //             System.out.println("\nYou have entered " + e.getName() + ". You can make a guess.");
@@ -263,7 +263,7 @@ public class Character {
     //                     characterGuessed.getName() + "\n"+
     //                     weaponGuessed + "\n" +
     //                     estateGuessed.getName() + "\n");
-                    
+
 
     //                 System.out.println("\n Please type 'x' to confirm");
     //                 confirmation = new Scanner(System.in).nextLine().toLowerCase();
@@ -393,6 +393,7 @@ public class Character {
 //     }
 
     // Enums
+
     /**
      * Order of rotation for characters following an anti-clockwise rotation
      */
@@ -408,6 +409,7 @@ public class Character {
 
         /**
          * Returns the next direction to play after this one
+         *
          * @return The rotated direction.
          */
 
