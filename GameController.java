@@ -391,7 +391,6 @@ public class GameController implements MouseListener, MouseMotionListener {
                 // Clear the visited cells since the player entered an estate
                 visitedCellsThisTurn.clear();
 
-
                 //handleEndTurnButton();  // End the player's turn after entering the estate
             });
         } else {
@@ -467,18 +466,17 @@ public class GameController implements MouseListener, MouseMotionListener {
 
         view.logMessage(currentPlayer + " has accused :\n" + c + "\n" + w + "\n" + e + "\n");
 
-        for(Card card: board.getMurderCards()){
-            if(card.getType() == Card.CardType.CHARACTER){
-                if(card.toString().equals(c.toString())){
+        Card tempCharacter = new Card(c.toString(), Card.CardType.CHARACTER);
+        Card tempWeapon = new Card(w.toString(), Card.CardType.WEAPON);
+        Card tempEstate = new Card(e.toString(), Card.CardType.ESTATE);
+
+        for(Character character: board.getCharacters()) {
+            for (Card card : character.getCards()) {
+                if (card.equals(new Card(tempCharacter.getName().toString(), Card.CardType.CHARACTER)) ||
+                        card.equals(new Card(tempWeapon.getName(), Card.CardType.WEAPON)) ||
+                        card.equals(new Card(tempEstate.getName(), Card.CardType.ESTATE))) {
                     refuted = true;
-                }
-            } else if(card.getType() == Card.CardType.WEAPON){
-                if(card.toString().equals(w.toString())){
-                    refuted = true;
-                }
-            } else if(card.getType() == Card.CardType.ESTATE){
-                if(card.toString().equals(e.toString())){
-                    refuted = true;
+                    break; // Exit the loop early if a match is found.
                 }
             }
         }
@@ -493,8 +491,8 @@ public class GameController implements MouseListener, MouseMotionListener {
 
             //stop the character from being played
         } else {
-            //you win
-            System.out.println("win");
+            selectOption(List.of("Ok"), "You Win!","Accusation");
+            System.exit(0);
         }
 
     }
