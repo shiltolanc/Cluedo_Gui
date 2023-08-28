@@ -297,7 +297,6 @@ public class GameView extends JFrame {
         b.setPreferredSize(new Dimension(220, 30));
         b.setMaximumSize(new Dimension(220, 30));
         b.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // b.setBackground(Color.GREEN);
         b.setFont(font);
         b.setBackground(Color.WHITE);
         b.setForeground(Color.BLACK);
