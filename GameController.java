@@ -91,7 +91,8 @@ public class GameController implements MouseListener, MouseMotionListener {
         rollCompleted = false;
         view.updatePlayerTurnLabel(currentPlayer.getName().name()); // Set initial current player turn label
         remainingMoves = currentRoll; // initialize remainingMoves with currentRoll
-        view.updateMovesRemainingLabel(remainingMoves); // display remainingMoves  
+        view.updateMovesRemainingLabel(remainingMoves); // display remainingMoves
+        showCurrentPlayerCards();
     }
 
     @Override
@@ -406,10 +407,10 @@ public class GameController implements MouseListener, MouseMotionListener {
         //move character as well
 
         view.logMessage(currentPlayer + " has accused :\n" + c + "\n" + w + "\n" + e + "\n");
-
+        view.updatePlayerCards(new HashSet<>());
         //refute the guess
         refuteCards(c,w,e);
-
+        showCurrentPlayerCards();
     }
 
     /**
