@@ -1,5 +1,3 @@
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.util.*;
 
 public class Character {
