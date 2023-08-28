@@ -1,14 +1,10 @@
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 import javax.swing.JLabel;
-
 import java.awt.Color;
 import java.awt.event.*;  
 
@@ -36,9 +32,6 @@ public class Initialiser implements ActionListener{
         //     }
         //     System.out.println("Please input a valid player count :");
         // }
-        
-    
-        
     }
 
     public void actionPerformed(ActionEvent e){  
@@ -150,48 +143,5 @@ public class Initialiser implements ActionListener{
      */
     public static void setup() {
         Main.board.takeList(list);
-        // JFrame frame = new JFrame("Cluedo");
-        // JPanel container = new JPanel();
-
-        // JPanel panel1 = new JPanel();
-        // JPanel panel2 = new JPanel();
-
-        // panel1.setBackground(new Color(32,33,36));
-        // panel2.setBackground(Color.WHITE);
-        // panel2.setSize(1000,200);
-
-        // container.add(panel1);
-        // container.add(panel2);
-        // container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
-
-        // frame.add(container);
-        // frame.setSize(1300, 750);
-        // frame.setLocationRelativeTo(null);
-        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // frame.setVisible(true);
-        // frame.setAlwaysOnTop(true);
-
-        // text = new JTextArea();
-        // text.setEditable(false); // prevent users from accidentily messing up grid formatting
-        // panel1.add(text);
-
-        // redirected System.out
-        // panel2.setLayout(new BorderLayout());
-        // panel2Text = new JTextArea();
-        // panel2Text.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // text padding
-        // panel2Text.setEditable(false);
-        // JScrollPane scrollPane = new JScrollPane(panel2Text);
-        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        // panel2.add(scrollPane, BorderLayout.CENTER);
-
-        // PrintStream panel2PrintStream = new PrintStream(new CustomOutputStream(panel2Text));
-        // System.setOut(panel2PrintStream);
-        // System.setErr(panel2PrintStream);
-
-        // text.setFont(new Font("Courier New", Font.PLAIN, 12));
-        // text.setBackground(new Color(32,33,36));
-        // text.setForeground(new Color(220, 220, 220));
-
-        // text.setText(Main.board.toString());
     }
 }

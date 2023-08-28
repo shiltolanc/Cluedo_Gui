@@ -31,6 +31,7 @@ public class GameView extends JFrame {
     private GameController gameController;
     private BoardRenderer boardRenderer;
 
+    // Fonts
     private Font glutenLightFont;
     private Font glutenBoldFont;
     private Font glutenExtraLightFont;

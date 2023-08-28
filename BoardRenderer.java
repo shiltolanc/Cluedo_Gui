@@ -73,7 +73,7 @@ public class BoardRenderer {
 
         // Draw estates and grey areas
         for (Estate estate : board.getEstates()) {
-            int thickness = 3;  // Line thickness
+            int thickness = 3;
             g.setStroke(new BasicStroke(thickness));
 
             if (!(estate instanceof GreyArea)) {
@@ -86,33 +86,9 @@ public class BoardRenderer {
                 g.fillRect(estate.getX() * cellSize, estate.getY() * cellSize, (estate.getX2() - estate.getX() + 1) * cellSize, (estate.getY2() - estate.getY() + 1) * cellSize);
             }
         }
-        // // Draw the estates with colors
-        // for (Estate estate : board.getEstates()) {
-        //     switch (estate.getName()) {
-        //         case "Haunted House":
-        //             g.setColor(new Color(205, 92, 92, 150));  // Light Coral
-        //             break;
-        //         case "Manic Manor":
-        //             g.setColor(new Color(85, 107, 47, 150));  // Dark Olive Green
-        //             break;
-        //         case "Calamity Castle":
-        //             g.setColor(new Color(70, 130, 180, 150));  // Steel Blue
-        //             break;
-        //         case "Peril Palace":
-        //             g.setColor(new Color(139, 69, 19, 150));  // Saddle Brown
-        //             break;
-        //         case "Visitation Villa":
-        //             g.setColor(new Color(255, 140, 0, 150));  // Dark Orange
-        //             break;
-        //         default:
-        //             g.setColor(Color.LIGHT_GRAY);
-        //             break;
-        //     }
-        //     g.fillRect(estate.getX() * cellSize + 2, estate.getY() * cellSize + 2, (estate.getX2() - estate.getX() + 1) * cellSize - 3, (estate.getY2() - estate.getY() + 1) * cellSize - 3);
-        // }
 
         // Draw estate entrances
-        int thickness = 3;  // Line thickness
+        int thickness = 3;
         g.setStroke(new BasicStroke(thickness));
 
         List<Coord> redEntrances = gameController.getUnreachableEntrances();
@@ -166,8 +142,8 @@ public class BoardRenderer {
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(1));
 
-        // Print names on each estate
-        Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f); // Dynamically adjust font size based on cell size
+        // Print names on each estate and dynamically adjust font size based on cell size
+        Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f);
 
         g.setFont(boardFont);
         g.setColor(Color.BLACK);

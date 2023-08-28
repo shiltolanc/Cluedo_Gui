@@ -1,11 +1,5 @@
 import java.util.*;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JRadioButton;
-
 public class Board {
 
     // Member variables
@@ -43,7 +37,6 @@ public class Board {
 
     private List<Coord> validHighlightedCells;
     private List<Coord> invalidHighlightedCells;
-    private ArrayList<String> list = new ArrayList<String>();
     private ArrayList<Character> chars = new ArrayList<Character>();
     int playerCount;
 
