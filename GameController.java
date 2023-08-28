@@ -489,7 +489,7 @@ public class GameController implements MouseListener, MouseMotionListener {
             //stop the character from being played
         } else {
             //you win
-            System.out.println("piss");
+            System.out.println("win");
         }
 
     }

@@ -76,7 +76,6 @@ public class Initialiser implements ActionListener{
             if(list.size()==4){
                 playerCount = 4;
             }
-            System.out.println(playerCount);
 
             
         }
