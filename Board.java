@@ -141,7 +141,9 @@ public class Board {
             chars.add(character);
           }
         }
-        shuffleCharacters(chars);
+        characters = chars;
+        System.out.println(characters.toString());
+        //shuffleCharacters(chars);
         distributeCards();
       }
 

@@ -451,8 +451,6 @@ public class GameController implements MouseListener, MouseMotionListener {
         String con = selectOption(List.of("Yes","No"), "You are about to make a final accusation are you sure you want to continue?","Accusation").get();
         if(con.equals("No")){ return; }
 
-        System.out.println(board.getMurderCards());
-
         Character c = selectOption(board.getCharacters(),"Character!", "Select one to accuse:").get();
         Weapon w = selectOption(board.getWeapons(),"Weapon!", "Select one to accuse:").get();
         Estate e = board.getEstateAt(currentPlayer.getX(), currentPlayer.getY());
