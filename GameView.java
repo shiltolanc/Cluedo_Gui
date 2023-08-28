@@ -30,7 +30,7 @@ public class GameView extends JFrame {
     // Game Controllers and Renderers
     private GameController gameController;
     private BoardRenderer boardRenderer;
-    
+
     private Font glutenLightFont;
     private Font glutenBoldFont;
     private Font glutenExtraLightFont;
@@ -41,7 +41,7 @@ public class GameView extends JFrame {
     public GameView(Board board, GameController gameController) {
         this.gameController = gameController;
         this.boardRenderer = new BoardRenderer(board, gameController);
-        
+
         // Load custom font
         try {
             glutenRegularFont = FontLoader.loadFont("/fonts/Gluten-Regular.ttf");
@@ -54,15 +54,15 @@ public class GameView extends JFrame {
         if (glutenFont == null) {
             glutenFont = new Font("Arial", Font.PLAIN, 12); // additional safety fallback
         }
-    
+
         // Basic JFrame settings
         setupFrame();
-    
+
         // Initialize panels
         initBoardPanel();
         initInfoPanel();
         initLogger();
-    
+
         // Display the JFrame
         setVisible(true);
     }
@@ -75,7 +75,7 @@ public class GameView extends JFrame {
     public void logMessage(String msg) {
         logs.append(msg + "\n");
     }
-    
+
     public void updatePlayerTurnLabel(String playerName) {
         Color playerColor = gameController.determinePlayerColor(playerName.charAt(0));
         Icon playerIcon = new PlayerIcon(playerColor);
@@ -93,14 +93,14 @@ public class GameView extends JFrame {
     public void updateDiceRollLabel(int diceNumber) {
         diceRollLabel.setText(String.valueOf(diceNumber));
     }
-    
+
     public void updateMovesRemainingLabel(int remainingMoves) {
         movesRemainingLabel.setText(String.valueOf(remainingMoves));
     }
 
     public void addRollDiceButtonListener(ActionListener listener) {
         rollDiceButton.addActionListener(listener);
-    }    
+    }
 
     // public void addMakeGuessButtonListener(ActionListener listener) {
     //     makeGuessButton.addActionListener(listener);
@@ -116,7 +116,7 @@ public class GameView extends JFrame {
 
     public void addBoardMouseMotionListener(MouseMotionListener listener) {
         boardPanel.addMouseMotionListener(listener);
-    }    
+    }
 
     public void updatePlayerCards(Set<Card> cards) {
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -148,7 +148,7 @@ public class GameView extends JFrame {
                 boardRenderer.drawBoard((Graphics2D) g, this);
             }
         };
-    
+
         // Wrap boardPanel with another panel to create a margin
         containerPanel = new JPanel(new BorderLayout());
         containerPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 12));
@@ -165,28 +165,28 @@ public class GameView extends JFrame {
         setupPlayerCardsPanel();
         addComponentsToInfoPanel();
     }
-    
+
     private void setupInfoPanel() {
         Font titleFont = glutenBoldFont.deriveFont(Font.BOLD, 22);
-        
+
         infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setPreferredSize(new Dimension(275, 500));
         infoPanel.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(20, 12, 12, 12),
-                BorderFactory.createTitledBorder(
-                    BorderFactory.createBevelBorder(BevelBorder.LOWERED),
-                    "Hobby Detectives",
-                    TitledBorder.CENTER,
-                    TitledBorder.TOP,
-                    titleFont,
-                    Color.BLACK
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(20, 12, 12, 12),
+                        BorderFactory.createTitledBorder(
+                                BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+                                "Hobby Detectives",
+                                TitledBorder.CENTER,
+                                TitledBorder.TOP,
+                                titleFont,
+                                Color.BLACK
+                        )
                 )
-            )
         );
     }
-    
+
     private void setupPlayerTurnPanel() {
         playerTurnLabel = new JLabel("Player's turn: ");
         playerTurnLabel.setOpaque(true);
@@ -199,33 +199,33 @@ public class GameView extends JFrame {
         playerTurnPanel.setMaximumSize(new Dimension(getWidth(), 80));
         playerTurnPanel.add(playerTurnLabel, BorderLayout.CENTER);
         playerTurnPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(12,12,0,12),
-            BorderFactory.createTitledBorder(
-                BorderFactory.createBevelBorder(BevelBorder.LOWERED),
-                "Player's turn",
-                TitledBorder.CENTER,
-                TitledBorder.CENTER,
-                playerTurnFont,
-                Color.BLACK
-            )
+                BorderFactory.createEmptyBorder(12, 12, 0, 12),
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+                        "Player's turn",
+                        TitledBorder.CENTER,
+                        TitledBorder.CENTER,
+                        playerTurnFont,
+                        Color.BLACK
+                )
         ));
-    
+
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         infoPanel.add(playerTurnPanel);
     }
-    
+
     private void setupDiceAndMovesPanel() {
         diceRollLabel = createCenteredLabel("0");
         movesRemainingLabel = createCenteredLabel("0");
-    
+
         JPanel diceRollPanel = createTitledPanel("Dice roll", diceRollLabel);
         JPanel movesRemainingPanel = createTitledPanel("Moves left", movesRemainingLabel);
-    
+
         JPanel diceAndMovesPanel = new JPanel(new GridLayout(1, 2));
         diceAndMovesPanel.setPreferredSize(new Dimension(getWidth(), 80));
         diceAndMovesPanel.add(diceRollPanel);
         diceAndMovesPanel.add(movesRemainingPanel);
-    
+
         infoPanel.add(diceAndMovesPanel);
     }
 
@@ -253,17 +253,17 @@ public class GameView extends JFrame {
         endTurnButton.setUI(new StyledButtonUI());
 
         // makeGuessButton = new JButton("Make a Guess");
-    
-        infoPanel.add(Box.createRigidArea(new Dimension(0,5)));
+
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         infoPanel.add(rollDiceButton);
-        infoPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         infoPanel.add(endTurnButton);
-        infoPanel.add(Box.createRigidArea(new Dimension(0,20)));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         // infoPanel.add(makeGuessButton);
-        infoPanel.add(Box.createRigidArea(new Dimension(0,20)));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
     }
-    
-    
+
+
     private void setupPlayerCardsPanel() {
         playerCardsList = new JList<>();
         playerCardsList.setFixedCellHeight(20);
@@ -271,22 +271,22 @@ public class GameView extends JFrame {
         playerCardsList.setBackground(Color.getColor(infoPanel.getName()));
         playerCardsList.setSelectionBackground(Color.getColor(infoPanel.getName()));
         playerCardsList.setFocusable(false);
-    
+
         JScrollPane playerCardsScrollPane = new JScrollPane(playerCardsList);
         playerCardsScrollPane.setMinimumSize(new Dimension(210, 80));
         playerCardsScrollPane.setPreferredSize(new Dimension(210, 80));
         playerCardsScrollPane.setBorder(null);
 
         JPanel cardPanel = new JPanel();
-        cardPanel.setBorder(BorderFactory.createTitledBorder("Your Cards"));        
+        cardPanel.setBorder(BorderFactory.createTitledBorder("Your Cards"));
         cardPanel.add(playerCardsScrollPane);
-    
+
         Font playerCardsFont = glutenExtraLightFont.deriveFont(Font.BOLD, 15);
         playerCardsList.setFont(playerCardsFont);
 
         infoPanel.add(cardPanel);
     }
-    
+
     private JLabel createCenteredLabel(String text) {
         Font centeredLabelFont = glutenLightFont.deriveFont(Font.BOLD, 32);
 
@@ -295,30 +295,30 @@ public class GameView extends JFrame {
         label.setHorizontalAlignment(JLabel.CENTER);
         return label;
     }
-    
+
     private JPanel createTitledPanel(String title, JComponent component) {
         Font titledPanelFont = glutenExtraLightFont.deriveFont(Font.BOLD, 12);
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(12,12,12,12),
-            BorderFactory.createTitledBorder(
-                BorderFactory.createBevelBorder(BevelBorder.LOWERED),
-                // BorderFactory.createBevelBorder(BevelBorder.RAISED),
-                title,
-                TitledBorder.CENTER,
-                TitledBorder.CENTER,
-                titledPanelFont,
-                Color.BLACK
-            )
+                BorderFactory.createEmptyBorder(12, 12, 12, 12),
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+                        // BorderFactory.createBevelBorder(BevelBorder.RAISED),
+                        title,
+                        TitledBorder.CENTER,
+                        TitledBorder.CENTER,
+                        titledPanelFont,
+                        Color.BLACK
+                )
         ));
         panel.add(component, BorderLayout.CENTER);
         return panel;
     }
-    
+
     private void addComponentsToInfoPanel() {
         add(infoPanel, BorderLayout.EAST);
     }
-    
+
     private void initLogger() {
         logs = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(logs);
@@ -332,7 +332,7 @@ public class GameView extends JFrame {
         // Keep the log scrolled to the bottom
         DefaultCaret caret = (DefaultCaret) logs.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        
+
         JPanel loggerPanel = new JPanel(new BorderLayout());
         loggerPanel.setBorder(BorderFactory.createTitledBorder("History"));
         loggerPanel.add(scrollPane, BorderLayout.CENTER);
@@ -344,26 +344,26 @@ public class GameView extends JFrame {
         // Add the logger JPanel to the infoPanel
         infoPanel.add(loggerPanel);
     }
-    
+
     // Nested
     class PlayerIcon implements Icon {
         private final int size = 24;
         private Color color;
-    
+
         public PlayerIcon(Color color) {
             this.color = color;
         }
-    
+
         @Override
         public int getIconWidth() {
             return size;
         }
-    
+
         @Override
         public int getIconHeight() {
             return size;
         }
-    
+
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2d = (Graphics2D) g;

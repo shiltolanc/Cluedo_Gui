@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Estate {
-    
+
     // Member variables
     private int x;
     private int y;

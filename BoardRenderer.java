@@ -125,7 +125,7 @@ public class BoardRenderer {
                 for (Coord entrance : estate.getEntrances()) {
                     int rectX = entrance.getX() * cellSize;
                     int rectY = entrance.getY() * cellSize;
-            
+
                     // Check if the entrance is the closest one
                     if (redEntrances.contains(entrance) || greenEntrances.contains(entrance)) {
                         if (redEntrances.contains(entrance)) {
@@ -168,7 +168,7 @@ public class BoardRenderer {
 
         // Print names on each estate
         Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f); // Dynamically adjust font size based on cell size
-        
+
         g.setFont(boardFont);
         g.setColor(Color.BLACK);
 
@@ -176,21 +176,21 @@ public class BoardRenderer {
             if (!(estate instanceof GreyArea)) {
                 // Convert estate name to uppercase and split by spaces
                 String[] nameParts = estate.getName().toUpperCase().split(" ");
-                
+
                 // Calculate total height of all lines combined
                 int totalHeight = nameParts.length * cellSize / 2;
-        
+
                 // Calculate the starting y coordinate
                 int offsetY = cellSize / 2;
                 int nameY = estate.getY() * cellSize + (estate.getY2() - estate.getY() + 1) * cellSize / 2 - totalHeight / 2 + offsetY;
-        
+
                 for (String part : nameParts) {
                     // Calculate width of the text
                     int textWidth = g.getFontMetrics().stringWidth(part);
-                    
+
                     // Calculate the x coordinate to center the text
                     int nameX = estate.getX() * cellSize + (estate.getX2() - estate.getX() + 1) * cellSize / 2 - textWidth / 2;
-        
+
                     g.drawString(part, nameX, nameY);
                     nameY += cellSize / 2; // Move to the next line
                 }
@@ -207,7 +207,7 @@ public class BoardRenderer {
         // Draw characters
         FontMetrics fm = g.getFontMetrics();
         for (Character character : board.getCharacters()) {
-            switch(character.getInitial()) {
+            switch (character.getInitial()) {
                 case "L":
                     g.setColor(Color.GREEN);
                     break;
@@ -232,8 +232,8 @@ public class BoardRenderer {
             
             int textWidth = fm.stringWidth(character.getInitial());
             int textHeight = fm.getAscent();
-            int centeredX = (int)(character.getAnimatedX() * cellSize) + (cellSize - textWidth) / 2;
-            int centeredY = (int)(character.getAnimatedY() * cellSize) + (cellSize + textHeight) / 2;
+            int centeredX = (int) (character.getAnimatedX() * cellSize) + (cellSize - textWidth) / 2;
+            int centeredY = (int) (character.getAnimatedY() * cellSize) + (cellSize + textHeight) / 2;
             g.drawString(character.getInitial(), centeredX, centeredY);
         }
     }
