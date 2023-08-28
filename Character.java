@@ -12,7 +12,7 @@ public class Character {
     private String initial = "";
     private Direction direction;
     private Set<Card> cards = new HashSet<>();
-    // private boolean hasMadeFalseAccusation = false;
+    private boolean lost = false;
 
     // Constructor
     public Character(int x, int y, String initial, Direction direction) {
@@ -77,6 +77,14 @@ public class Character {
 
     public Set<Card> getCards() {
         return cards;
+    }
+
+    public void lose(){
+        lost = true;
+    }
+
+    public boolean lost(){
+        return lost;
     }
 
     public String toString(){

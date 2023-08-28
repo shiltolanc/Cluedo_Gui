@@ -299,8 +299,13 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
         geussed = false;
         view.updatePlayerCards(new HashSet<>()); // Clear the card list as soon as a player's turn ends.
-        currentTurn = (currentTurn + 1) % board.getCharacters().size();
-        currentPlayer = board.getCharacters().get(currentTurn);
+        while(true) {
+            currentTurn = (currentTurn + 1) % board.getCharacters().size();
+            currentPlayer = board.getCharacters().get(currentTurn);
+            if (!currentPlayer.lost()) {
+                break;
+            }
+        }
         currentPlayer.setAnimatedX(currentPlayer.getX());
         currentPlayer.setAnimatedY(currentPlayer.getY());
         view.updatePlayerTurnLabel(currentPlayer.getName().toString());
@@ -409,7 +414,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         Estate e = board.getEstateAt(currentPlayer.getX(), currentPlayer.getY());
 
         moveWeapon(e,w);
-        //move character as well
+        moveToRandomPositionInsideEstate(e,c);
 
         view.logMessage(currentPlayer + " has accused :\n" + c + "\n" + w + "\n" + e + "\n");
         view.updatePlayerCards(new HashSet<>());
@@ -483,14 +488,15 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
 
         if(refuted){
-            selectOption(List.of("Ok"), "Your accusation has been refuted ensure that only you can view the screen","Accusation");
+            selectOption(List.of("Ok"), "Your accusation has been refuted ensure that only you can view the screen" +
+                    "\nYou will not be able to move from this point on but you can still refute cards","Accusation");
             StringBuilder sb = new StringBuilder("Murder Cards: \n");
             for(Card card: board.getMurderCards()){
                 sb.append(card + "\n");
             }
             selectOption(List.of("Ok"), sb.toString(), "Murder Cards");
+            currentPlayer.lose();
 
-            //stop the character from being played
         } else {
             selectOption(List.of("Ok"), "You Win!","Accusation");
             System.exit(0);
@@ -521,6 +527,32 @@ public class GameController implements MouseListener, MouseMotionListener {
             view.logMessage("Failed to move weapon to estate");
         }
     }
+
+    //this is another duplicate the moves a specific character
+    private void moveToRandomPositionInsideEstate(Estate estate, Character c) {
+        List<Coord> unoccupiedSquares = new ArrayList<>(estate.getUnoccupiedSquares());
+
+        // Remove entrances from the unoccupiedSquares list
+        unoccupiedSquares.removeAll(estate.getEntrances());
+
+        // Remove squares that are occupied by other players
+        for (Character character : board.getCharacters()) {
+            if (!character.equals(c)) {
+                unoccupiedSquares.remove(new Coord(character.getX(), character.getY()));
+            }
+        }
+
+        if (!unoccupiedSquares.isEmpty()) {
+            int randomIndex = new Random().nextInt(unoccupiedSquares.size());
+            Coord randomSquare = unoccupiedSquares.get(randomIndex);
+            c.setX(randomSquare.getX());
+            c.setY(randomSquare.getY());
+            view.repaint();
+        } else {
+            view.logMessage("No available space inside the estate!");
+        }
+    }
+
 
     public static <T> Optional<T> selectOption(List<T> options, String message, String title) {
         JFrame jf = new JFrame();
