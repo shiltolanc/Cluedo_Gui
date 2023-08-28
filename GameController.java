@@ -1,12 +1,10 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
-import java.awt.*;
 
 public class GameController implements MouseListener, MouseMotionListener {
 

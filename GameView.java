@@ -167,9 +167,9 @@ public class GameView extends JFrame {
     // Private Methods
     private void setupFrame() {
         setTitle("Hobby Detectives");
-        setSize(940, 650);
+        setSize(940, 725);
         setLayout(new BorderLayout());
-        setMinimumSize(new Dimension(940, 690));
+        setMinimumSize(new Dimension(940, 725));
         setAlwaysOnTop(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
