@@ -25,6 +25,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     private List<Coord> hoverableEntrances = new ArrayList<>();
     private List<Coord> unreachableEntrances = new ArrayList<>();
     private Set<Coord> visitedCellsThisTurn = new HashSet<>();
+    private boolean geussed = false;
 
     private AnimationController animationController;
 
@@ -296,6 +297,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         if (currentEstate != null && remainingMoves > 0) {
             moveToRandomPositionInsideEstate(currentEstate);
         }
+        geussed = false;
         view.updatePlayerCards(new HashSet<>()); // Clear the card list as soon as a player's turn ends.
         currentTurn = (currentTurn + 1) % board.getCharacters().size();
         currentPlayer = board.getCharacters().get(currentTurn);
@@ -317,7 +319,10 @@ public class GameController implements MouseListener, MouseMotionListener {
     private void guessOptionsPressed(ActionEvent e) { handleGuessOptionButton(); }
 
     private void handleGuessOptionButton() {
-        view.createGuessMenu(view.getGuessOptionButton());
+        if(!geussed){
+            geussed = true;
+            view.createGuessMenu(view.getGuessOptionButton()); 
+        }
     }
 
     private Coord findClosestEntrance(Coord destination, List<Coord> entrances) {
