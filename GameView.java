@@ -242,12 +242,11 @@ public class GameView extends JFrame {
         rollDiceButton.setBackground(new Color(0x2dce98));
         rollDiceButton.setForeground(Color.white);
         rollDiceButton.setUI(new StyledButtonUI());
-    
+        
         endTurnButton = new JButton("End Turn");
         endTurnButton.setPreferredSize(new Dimension(220, 30));
         endTurnButton.setMaximumSize(new Dimension(220, 30));
         endTurnButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        endTurnButton.setBackground(Color.GREEN);
         endTurnButton.setFont(endTurnButtonFont);
         endTurnButton.setBackground(Color.WHITE);
         endTurnButton.setForeground(Color.BLACK);

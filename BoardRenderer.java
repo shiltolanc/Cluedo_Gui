@@ -222,7 +222,13 @@ public class BoardRenderer {
                     break;
             }
             g.fillOval((int)(character.getAnimatedX() * cellSize) + 2,  (int)(character.getAnimatedY() * cellSize) + 2, cellSize - 3, cellSize - 3);
-            g.setColor(Color.BLACK);
+
+            // Set text color based on the character for easier reading
+            if ("M".equals(character.getInitial()) || "P".equals(character.getInitial())) {
+                g.setColor(Color.WHITE);
+            } else {
+                g.setColor(Color.BLACK);
+            }
             
             int textWidth = fm.stringWidth(character.getInitial());
             int textHeight = fm.getAscent();
