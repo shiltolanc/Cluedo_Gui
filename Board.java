@@ -1,5 +1,11 @@
 import java.util.*;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JRadioButton;
+
 public class Board {
 
     // Member variables
@@ -37,6 +43,8 @@ public class Board {
 
     private List<Coord> validHighlightedCells;
     private List<Coord> invalidHighlightedCells;
+    private ArrayList<String> list = new ArrayList<String>();
+    private ArrayList<Character> chars = new ArrayList<Character>();
 
     // Constructor
     public Board() {
@@ -125,14 +133,20 @@ public class Board {
     }
 
     public void determineCharacters() {
-        int playerCount = Main.UI.getPlayerCount();
-        switch (playerCount) {
-            case 3 -> shuffleCharacters(List.of(getCharacterByName("LUCILLA"),
-                      getCharacterByName("BERT"), getCharacterByName("MALINA")));
-            case 4 -> shuffleCharacters(characters);
-            default -> throw new IllegalArgumentException("Case exception: player count is " + playerCount);
-        }
+        //irreleveant
     }
+
+    public void takeList(ArrayList<String> names) {
+        System.out.println(names.get(0));
+        System.out.println("took the list");
+        for(String name : names) {
+          Character character = getCharacterByName(name);
+          if(character != null) {
+            chars.add(character); 
+          }
+        }
+        shuffleCharacters(chars);
+      }
 
     // Private methods
     private void populateDeck() {

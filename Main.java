@@ -5,13 +5,13 @@ public class Main {
     static Board board = new Board();
     public static boolean isGameOn = true;
     public static int falseAccusationCount = 0;
+    
 
     // Main method
     public static void main(String[] args) {
-
-        board.determineCharacters();
+        //board.determineCharacters();
         Initialiser.setup();
-
+        System.out.println("stuff");
         GameController controller = new GameController(board);
         GameView view = new GameView(board, controller);
         controller.setView(view);
