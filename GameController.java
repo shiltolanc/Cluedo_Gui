@@ -309,6 +309,10 @@ public class GameController implements MouseListener, MouseMotionListener {
         view.updatePlayerTurnLabel(currentPlayer.getName().toString());
         view.updateDiceRollLabel(0);
         view.updateMovesRemainingLabel(0);
+
+        view.updatePlayerCards(new HashSet<>());
+        selectOption(List.of("Ok"),"Pass the tablet to " + currentPlayer, "Next turn").get();
+
         view.logMessage("It's now " + currentPlayer.getName() + "'s turn!");
         rollCompleted = false; // Reset roll to false so the next player must roll the dice at the start of their turn
         currentRoll = 0; // Reset the current roll count for the new turn
@@ -317,13 +321,13 @@ public class GameController implements MouseListener, MouseMotionListener {
         view.setRollDiceButtonEnabled(true);
         showCurrentPlayerCards(); // Update the card list when it's a new player's turn
         view.repaint();
+
     }
 
     private void guessOptionsPressed(ActionEvent e) { handleGuessOptionButton(); }
 
     private void handleGuessOptionButton() {
         if(!geussed){
-            geussed = true;
             view.createGuessMenu(view.getGuessOptionButton()); 
         }
     }
@@ -406,7 +410,7 @@ public class GameController implements MouseListener, MouseMotionListener {
      * Allows the current player to make a guess
      */
     public void hypothesis(){
-
+        geussed = true;
         Character c = selectOption(board.getCharacters(),"Character!", "Select one to accuse:").get();
         Weapon w = selectOption(board.getWeapons(),"Weapon!", "Select one to accuse:").get();
         Estate e = board.getEstateAt(currentPlayer.getX(), currentPlayer.getY());
@@ -460,6 +464,7 @@ public class GameController implements MouseListener, MouseMotionListener {
      * Final accusation
      */
     public void accusation(){
+        geussed = true;
         boolean refuted = false;
         String con = selectOption(List.of("Yes","No"), "You are about to make a final accusation are you sure you want to continue?","Accusation").get();
         if(con.equals("No")){ return; }
