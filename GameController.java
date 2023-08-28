@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.Timer;
 
@@ -71,6 +72,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     public void initListeners() {
         view.addRollDiceButtonListener(this::handleRollDiceButton);
         view.addEndTurnButtonListener(this::endTurnPressed);
+        view.addGuessOptionButtonListener(this::guessOptionsPressed);
         view.addBoardMouseListener(this);
         view.addBoardMouseMotionListener(this);
     }
@@ -318,6 +320,12 @@ public class GameController implements MouseListener, MouseMotionListener {
         view.repaint();
     }
 
+    private void guessOptionsPressed(ActionEvent e) { handleGuessOptionButton(); }
+
+    private void handleGuessOptionButton() {
+        view.createGuessMenu(view.getGuessOptionButton());
+    }
+
     private Coord findClosestEntrance(Coord destination, List<Coord> entrances) {
         if (entrances == null || entrances.isEmpty()) {
             return null;
@@ -401,6 +409,20 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
         return occupiedCells;
     }
+
+
+    // Restarts the application
+    /*
+    public static void RestartApplication() {
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "../SWEN225-A2", "Main");
+        try {
+            processBuilder.start();
+            System.exit(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    */
 
     // Nested
     class Dice {

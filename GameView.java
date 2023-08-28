@@ -13,6 +13,12 @@ public class GameView extends JFrame {
     private JPanel containerPanel;
     private JPanel infoPanel;
 
+    // Menu bar
+    private JMenuBar menuBar = new JMenuBar();
+
+    // Menus
+    private JMenu optionMenu = new JMenu("≡");
+
     // Labels
     private JLabel playerTurnLabel;
     private JLabel diceRollLabel;
@@ -21,7 +27,8 @@ public class GameView extends JFrame {
     // Buttons
     private JButton rollDiceButton;
     private JButton endTurnButton;
-    // private JButton makeGuessButton;
+    private JButton guessOptionButton;
+    public JButton getGuessOptionButton() { return guessOptionButton; }
 
     // Text Components
     private JTextArea logs;
@@ -64,6 +71,10 @@ public class GameView extends JFrame {
         initInfoPanel();
         initLogger();
 
+        // Initialize menu
+        initMenuItems();
+        setJMenuBar(menuBar);
+
         // Display the JFrame
         setVisible(true);
     }
@@ -87,6 +98,37 @@ public class GameView extends JFrame {
         playerTurnLabel.setText(" " + playerName);
     }
 
+    public void initMenuItems() {
+        // Menu items
+        //JMenuItem resetItem = new JMenuItem("Reset");
+        JMenuItem exitItem = new JMenuItem("Exit");
+
+        /*
+        resetItem.addActionListener(e -> {
+            JOptionPane.showMessageDialog(GameView.this, "Resetting game...");
+            GameController.RestartApplication();
+        });
+        */
+
+        exitItem.addActionListener(e -> System.exit(0));
+
+        // Set fonts
+        Font menuFont = new Font("Arial", Font.PLAIN, 24);
+        Font menuItemFont = new Font("Arial", Font.PLAIN, 18);
+
+        optionMenu.setFont(menuFont);
+        //resetItem.setFont(menuItemFont);
+        exitItem.setFont(menuItemFont);
+
+        // Add items to menu with a separator between them
+        //optionMenu.add(resetItem);
+        //optionMenu.addSeparator();
+        optionMenu.add(exitItem);
+
+        // Add menu to menu bar
+        menuBar.add(optionMenu);
+    }
+
     public void setRollDiceButtonEnabled(boolean enabled) {
         rollDiceButton.setEnabled(enabled);
     }
@@ -103,9 +145,9 @@ public class GameView extends JFrame {
         rollDiceButton.addActionListener(listener);
     }
 
-    // public void addMakeGuessButtonListener(ActionListener listener) {
-    //     makeGuessButton.addActionListener(listener);
-    // }
+    public void addGuessOptionButtonListener(ActionListener listener) {
+        guessOptionButton.addActionListener(listener);
+    }
 
     public void addEndTurnButtonListener(ActionListener listener) {
         endTurnButton.addActionListener(listener);
@@ -243,27 +285,56 @@ public class GameView extends JFrame {
         rollDiceButton.setBackground(new Color(0x2dce98));
         rollDiceButton.setForeground(Color.white);
         rollDiceButton.setUI(new StyledButtonUI());
-        
-        endTurnButton = new JButton("End Turn");
-        endTurnButton.setPreferredSize(new Dimension(220, 30));
-        endTurnButton.setMaximumSize(new Dimension(220, 30));
-        endTurnButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        endTurnButton.setFont(endTurnButtonFont);
-        endTurnButton.setBackground(Color.WHITE);
-        endTurnButton.setForeground(Color.BLACK);
-        endTurnButton.setUI(new StyledButtonUI());
 
-        // makeGuessButton = new JButton("Make a Guess");
+        endTurnButton = new JButton("End Turn");
+        whiteButton(endTurnButtonFont, endTurnButton);
+
+        guessOptionButton = new JButton("Guess");
+        whiteButton(endTurnButtonFont, guessOptionButton);
 
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         infoPanel.add(rollDiceButton);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         infoPanel.add(endTurnButton);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        // infoPanel.add(makeGuessButton);
+        infoPanel.add(guessOptionButton);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
     }
 
+    // White button customisation
+    private void whiteButton(Font font, JButton b) {
+        b.setPreferredSize(new Dimension(220, 30));
+        b.setMaximumSize(new Dimension(220, 30));
+        b.setAlignmentX(Component.CENTER_ALIGNMENT);
+        b.setBackground(Color.GREEN);
+        b.setFont(font);
+        b.setBackground(Color.WHITE);
+        b.setForeground(Color.BLACK);
+        b.setUI(new StyledButtonUI());
+    }
+
+    // Guessing menu, contains regular and final guess popup
+    public void createGuessMenu(Component button) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.setPreferredSize(new Dimension(220, 100));
+
+        JMenuItem normalGuess = new JMenuItem("Guess");
+        JMenuItem finalGuess = new JMenuItem("Final Guess");
+
+        // Trigger normal guess
+        normalGuess.addActionListener(e ->
+                JOptionPane.showMessageDialog(GameView.this, "Option 1 selected"));
+
+
+        // Trigger final guess, will either win or lose
+        finalGuess.addActionListener(e ->
+                JOptionPane.showMessageDialog(GameView.this, "Option 2 selected"));
+
+        popupMenu.add(normalGuess);
+        popupMenu.add(finalGuess);
+
+        popupMenu.show(button, 0, button.getHeight());
+    }
 
     private void setupPlayerCardsPanel() {
         playerCardsList = new JList<>();
