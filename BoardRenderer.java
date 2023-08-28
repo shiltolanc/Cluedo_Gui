@@ -142,8 +142,8 @@ public class BoardRenderer {
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(1));
 
-        // Print names on each estate
-        Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f); // Dynamically adjust font size based on cell size
+        // Print names on each estate and dynamically adjust font size based on cell size
+        Font boardFont = glutenFont.deriveFont(Font.BOLD, cellSize / 2f);
 
         g.setFont(boardFont);
         g.setColor(Color.BLACK);
