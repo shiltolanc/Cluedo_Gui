@@ -458,8 +458,8 @@ public class GameController implements MouseListener, MouseMotionListener {
         view.logMessage(currentPlayer + " has accused :\n" + c + "\n" + w + "\n" + e + "\n");
 
         Card tempCharacter = new Card(c.toString(), Card.CardType.CHARACTER);
-        Card tempWeapon = new Card(c.toString(), Card.CardType.WEAPON);
-        Card tempEstate = new Card(c.toString(), Card.CardType.ESTATE);
+        Card tempWeapon = new Card(w.toString(), Card.CardType.WEAPON);
+        Card tempEstate = new Card(e.toString(), Card.CardType.ESTATE);
 
         for(Character character: board.getCharacters()) {
             for (Card card : character.getCards()) {
@@ -482,8 +482,8 @@ public class GameController implements MouseListener, MouseMotionListener {
 
             //stop the character from being played
         } else {
-            //you win
-
+            selectOption(List.of("Ok"), "You Win!","Accusation");
+            System.exit(0);
         }
 
     }
